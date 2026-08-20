@@ -237,7 +237,7 @@
     transform-origin: 50% 120%;
     will-change: transform;
     transition:
-      transform var(--fan-ms, 0.9s) cubic-bezier(0.22, 0.9, 0.3, 1),
+      transform var(--fan-ms, 0.55s) cubic-bezier(0.16, 0.9, 0.28, 1),
       opacity 0.5s ease,
       filter 0.4s ease;
     cursor: pointer;
@@ -259,8 +259,8 @@
     box-shadow: 0 0 0 1px rgba(201,168,106,0.25), 0 0 22px var(--gold-soft), 0 12px 30px rgba(0,0,0,0.5);
   }
   .card.magnified .face {
-    outline: 1.5px solid var(--gold);
-    box-shadow: 0 0 0 1px rgba(201,168,106,0.3), 0 0 30px var(--gold-soft), 0 22px 44px rgba(0,0,0,0.55);
+    outline: 1.5px solid var(--ivory);
+    box-shadow: 0 0 0 1px rgba(240,234,217,0.3), 0 0 26px rgba(240,234,217,0.35), 0 22px 44px rgba(0,0,0,0.55);
   }
   .card.dimmed { opacity: 0.2; pointer-events: none; }
 
@@ -774,6 +774,8 @@ const STEP_EN = ["First Card", "Second Card", "Third Card"];
 /* ── 설정 ── */
 const DEFAULTS = { deck: "v3", reversed: true, speed: "normal", lang: null };
 const SPEEDS = { slow: 42, normal: 26, fast: 13 };
+const FAN_SPREAD = 116;
+const FAN_START = -FAN_SPREAD / 2;
 let cfg = { ...DEFAULTS };
 try {
   const saved = JSON.parse(localStorage.getItem("cozyTarotCfg"));
@@ -860,6 +862,7 @@ function buildStack() {
   picked = [];
   cur = 0;
   phase = "stack";
+  magState.clear();
 
   deckOrder = shuffle(TAROT_CARDS.map((_, i) => i));
   revMap = deckOrder.map(() => cfg.reversed && Math.random() < 0.5);
@@ -869,7 +872,7 @@ function buildStack() {
     el.className = "card";
     el.dataset.i = i;
     const jx = (Math.random() - 0.5) * 6;
-    const jr = (Math.random() - 0.5) * 5;
+    const jr = FAN_START + (Math.random() - 0.5) * 4;
     el.style.transform = `translate(${jx}px, ${-i * 0.6}px) rotate(${jr}deg)`;
     el.style.zIndex = i;
     el.dataset.baseZ = i;
@@ -885,11 +888,9 @@ function buildStack() {
 function fanOut() {
   phase = "fan";
   const n = els.length;
-  const spread = 116;
-  const start = -spread / 2;
   const gap = SPEEDS[cfg.speed];
   els.forEach((el, i) => {
-    const ang = start + (spread / (n - 1)) * i;
+    const ang = FAN_START + (FAN_SPREAD / (n - 1)) * i;
     el.dataset.ang = ang;
     setTimeout(() => { el.style.transform = `rotate(${ang}deg)`; }, 90 + i * gap);
   });
@@ -898,7 +899,7 @@ function fanOut() {
     phase = "pick";
     // 선택 단계부터는 돋보기 확대가 즉각 반응하도록 전환 속도를 빠르게 전환
     els.forEach(el => {
-      el.style.transition = "transform 0.2s cubic-bezier(0.22,1,0.36,1), opacity 0.5s ease, filter 0.3s ease";
+      el.style.transition = "transform 0.12s cubic-bezier(0.22,1,0.36,1), opacity 0.5s ease, filter 0.3s ease";
     });
   }, 90 + n * gap + 500);
 }
@@ -927,71 +928,100 @@ function onCardClick(e) {
 }
 
 /* ── 3b. 모바일 돋보기 선택 ──
-   터치로 누르면 손끝 아래 카드가 확대되어 뜨고, 손을 떼면 그 카드가 선택된다.
-   누른 채로 옆 카드로 옮기면 확대 대상도 따라 바뀐다 (부채꼴 카드를 훑어보는 느낌). */
+   손끝의 실제 x좌표를 기준으로 각 카드가 얼마나 가까운지에 따라 목표 크기가
+   정해지지만, 카드는 그 목표값으로 즉시 점프하지 않고 매 프레임 조금씩
+   따라간다(스프링 보간) — 손가락이 스치고 지나가면 건반을 누르듯 카드들이
+   순차적으로 살짝 눌렸다 떠오르는 촤르륵 하는 캐스케이드가 생긴다. */
 const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
 let magnifiedEl = null;
+let dragActive = false;
+let pointerX = 0;
+let magLoopRunning = false;
+const magState = new Map(); // card el → 0(평평)~1(최대 확대) 현재값
+const MAG_PEAK_SCALE = 0.22;
+const MAG_PEAK_LIFT = 22;
+const MAG_LERP = 0.3; // 클수록 더 즉각적, 작을수록 더 출렁이며 따라감
+const MAG_EPS = 0.003;
 
-function pickableCardAt(x, y) {
-  if (phase !== "pick") return null;
-  const el = document.elementFromPoint(x, y)?.closest(".card");
-  if (!el || el.classList.contains("picked") || el.classList.contains("locked") || el.classList.contains("dimmed")) return null;
-  return el;
+function magTargetFor(dist, radius) {
+  const t = Math.max(0, 1 - dist / radius);
+  return t * t * (3 - 2 * t); // smoothstep
 }
-// 손끝이 닿은 카드를 중심으로 이웃 카드까지 부드럽게 이어지는 돋보기 곡선
-// (거리 0 → 대상 카드, 1~2 → 옆 카드가 옅게 따라 뜬다. macOS Dock 확대 느낌)
-const MAGNIFY_FALLOFF = [
-  { scale: 1.22, lift: -22, z: 500 },
-  { scale: 1.10, lift: -11, z: 420 },
-  { scale: 1.03, lift: -4,  z: 380 },
-];
-function setMagnified(el) {
-  if (magnifiedEl === el) return;
-  magnifiedEl = el;
-  const targetPos = el ? parseInt(el.dataset.i) : null;
-  els.forEach(c => {
-    if (c.classList.contains("picked") || c.classList.contains("locked")) return;
-    const ang = c.dataset.ang || 0;
-    const dist = targetPos === null ? Infinity : Math.abs(parseInt(c.dataset.i) - targetPos);
-    const f = MAGNIFY_FALLOFF[dist];
-    c.classList.toggle("magnified", dist === 0);
-    if (f) {
-      c.style.zIndex = f.z;
-      c.style.transform = `rotate(${ang}deg) translateY(${f.lift}px) scale(${f.scale})`;
-    } else {
-      c.style.zIndex = c.dataset.baseZ ?? c.style.zIndex;
-      c.style.transform = `rotate(${ang}deg)`;
+// 카드는 아래쪽 한 점(transform-origin: 50% 120%)을 축으로 회전만 하기 때문에,
+// 회전각만 알면 카드 윗부분이 화면의 어느 x좌표에 와 있는지 삼각함수로 바로 계산된다
+// (getBoundingClientRect의 중심점은 축에 가까워 거의 안 움직여서 거리 기준으로 쓸 수 없다).
+function cardTopX(pivotX, armLen, angDeg) {
+  return pivotX + armLen * Math.sin(angDeg * Math.PI / 180);
+}
+function magnifyTick() {
+  const pickable = els.filter(c => !c.classList.contains("picked") && !c.classList.contains("locked"));
+  let pivotX = 0, armLen = 0, radius = 0, closest = null, closestDist = Infinity;
+  if (dragActive && pickable.length) {
+    const stageRect = stage.getBoundingClientRect();
+    pivotX = stageRect.left + stageRect.width / 2;
+    const cardWpx = parseFloat(getComputedStyle(pickable[0]).width);
+    armLen = cardWpx * 1.8; // card-r(1.5×card-w) × origin 오프셋(1.2)
+    radius = armLen * 0.85; // 부채꼴 전반에 걸쳐 파도가 퍼지도록 넉넉하게
+    pickable.forEach(c => {
+      const dist = Math.abs(pointerX - cardTopX(pivotX, armLen, c.dataset.ang || 0));
+      if (dist < closestDist) { closestDist = dist; closest = c; }
+    });
+  }
+  let anyActive = false;
+  pickable.forEach(c => {
+    const target = dragActive ? magTargetFor(Math.abs(pointerX - cardTopX(pivotX, armLen, c.dataset.ang || 0)), radius) : 0;
+    const cur = magState.get(c) ?? 0;
+    const next = cur + (target - cur) * MAG_LERP;
+    if (Math.abs(next) < MAG_EPS && target === 0) {
+      if (cur !== 0) {
+        c.style.transform = `rotate(${c.dataset.ang || 0}deg)`;
+        c.style.zIndex = c.dataset.baseZ ?? c.style.zIndex;
+        c.classList.remove("magnified");
+        magState.delete(c);
+      }
+      return;
     }
+    anyActive = true;
+    magState.set(c, next);
+    const ang = c.dataset.ang || 0;
+    c.style.transform = `rotate(${ang}deg) translateY(${(-MAG_PEAK_LIFT * next).toFixed(2)}px) scale(${(1 + MAG_PEAK_SCALE * next).toFixed(3)})`;
+    c.style.zIndex = 300 + Math.round(next * 300);
+    c.classList.toggle("magnified", dragActive && c === closest && next > 0.5);
   });
+  magnifiedEl = dragActive ? closest : null;
+
+  if (dragActive || anyActive) {
+    requestAnimationFrame(magnifyTick);
+  } else {
+    magLoopRunning = false;
+  }
 }
-let dragRAF = null, dragX = 0, dragY = 0;
-function queueMagnifyUpdate(x, y) {
-  dragX = x; dragY = y;
-  if (dragRAF) return;
-  dragRAF = requestAnimationFrame(() => {
-    dragRAF = null;
-    setMagnified(pickableCardAt(dragX, dragY));
-  });
+function startMagLoop() {
+  if (magLoopRunning) return;
+  magLoopRunning = true;
+  requestAnimationFrame(magnifyTick);
 }
 if (isCoarsePointer) {
   stage.addEventListener("pointerdown", e => {
     if (phase !== "pick") return;
-    const el = pickableCardAt(e.clientX, e.clientY);
-    if (el) { stage.setPointerCapture(e.pointerId); setMagnified(el); }
+    stage.setPointerCapture(e.pointerId);
+    dragActive = true;
+    pointerX = e.clientX;
+    startMagLoop();
   });
   stage.addEventListener("pointermove", e => {
-    if (phase !== "pick" || e.buttons === 0) return;
-    queueMagnifyUpdate(e.clientX, e.clientY);
+    if (!dragActive) return;
+    pointerX = e.clientX;
   });
-  stage.addEventListener("pointerup", e => {
-    if (dragRAF) { cancelAnimationFrame(dragRAF); dragRAF = null; }
+  stage.addEventListener("pointerup", () => {
+    dragActive = false;
     const el = magnifiedEl;
-    setMagnified(null);
+    magnifiedEl = null;
     if (el) confirmPick(el);
   });
   stage.addEventListener("pointercancel", () => {
-    if (dragRAF) { cancelAnimationFrame(dragRAF); dragRAF = null; }
-    setMagnified(null);
+    dragActive = false;
+    magnifiedEl = null;
   });
 }
 
