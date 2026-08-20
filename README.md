@@ -1,6 +1,6 @@
 # Cozy Shelter · 오늘의 카드
 
-매일 한 장씩 뽑아보는 타로 카드 웹앱입니다. 정적 HTML/CSS/JS로만 되어 있으며 별도 빌드 과정이 없습니다.
+매일 한 장씩 뽑아보는 타로 카드 웹앱입니다. 메이저 아르카나 22장을 **고서 · 밤 · 새벽** 3가지 테마 덱으로 지원합니다. 정적 HTML/CSS/JS로만 되어 있으며 별도 빌드 과정이 없습니다.
 
 **Live:** https://cozy-shelter-tarot.workers.dev <!-- 실제 배포 주소로 교체 -->
 
@@ -15,6 +15,8 @@
 | ![카드 리딩](assets/screenshot/cozy-shelter-tarot-3.jpg) | ![오늘의 요약](assets/screenshot/cozy-shelter-tarot-4.jpg) |
 
 ## 덱 (Decks)
+
+메이저 아르카나 22장 × 3가지 테마
 
 - **고서 (Antique)** — `assets/v1`
 - **밤 (Night)** — `assets/v2`
