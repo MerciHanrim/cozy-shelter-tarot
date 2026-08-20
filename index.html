@@ -872,7 +872,7 @@ function applyLang() {
 }
 
 /* ── 1. 스택 ── */
-function buildStack() {
+function buildStack(withIntro = true) {
   stage.classList.remove("hidden");
   stage.style.opacity = "";
   chosenRow.classList.remove("on");
@@ -906,15 +906,23 @@ function buildStack() {
     stage.appendChild(el);
     els.push(el);
   });
-  guide.textContent = "";
-  phase = "intro";
-  playHandIntro();
+  if (withIntro) {
+    guide.textContent = "";
+    phase = "intro";
+    playHandIntro();
+  } else {
+    // 설정에서 덱만 바꾼 경우: 패널이 열려있는 동안 연출이 낭비되지 않도록
+    // 조용히 세워둔 채로 대기하고, 패널을 닫고 덱을 탭하면 그때 손 연출이 나온다
+    guide.textContent = T().guideStack;
+    phase = "stack";
+  }
 }
 
 /* ── 0b. 손이 덱을 집어 부채꼴로 펼치는 인트로 ──
    집기 → 옮기기(기울임) → 펼치기 세 포즈를 짧게 겹쳐 넘기고, 펼치기 포즈가
    뜨는 순간 실제 fanOut()을 같이 실행해서 손이 카드를 펼치는 것처럼 보이게 한다. */
 function playHandIntro() {
+  phase = "intro"; // 재진입(연타) 방지 — fanOut()이 내부에서 "fan"으로 넘겨받는다
   const mk = (cls, src) => {
     const img = document.createElement("img");
     img.src = src;
@@ -998,7 +1006,7 @@ function confirmPick(el) {
 
 function onCardClick(e) {
   const el = e.currentTarget;
-  if (phase === "stack") { fanOut(); return; }
+  if (phase === "stack") { playHandIntro(); return; }
   if (isCoarsePointer) return; // 터치 기기는 돋보기 드래그 흐름(pointerup)에서 확정
   confirmPick(el);
 }
@@ -1277,7 +1285,7 @@ $("modalClose").addEventListener("click", () => $("modal").classList.remove("on"
 $("modal").addEventListener("click", e => { if (e.target === $("modal")) $("modal").classList.remove("on"); });
 
 /* ── 다시 뽑기 ── */
-$("again").addEventListener("click", buildStack);
+$("again").addEventListener("click", () => buildStack());
 
 /* ── 설정 UI ── */
 const settings = $("settings"), dim = $("dim");
@@ -1296,7 +1304,7 @@ document.querySelectorAll(".deck-opt").forEach(b => b.addEventListener("click", 
   if (cfg.deck === b.dataset.deck) return;
   cfg.deck = b.dataset.deck;
   saveCfg(); syncSettingsUI();
-  buildStack();
+  buildStack(false);
 }));
 $("revToggle").addEventListener("click", () => {
   cfg.reversed = !cfg.reversed;
