@@ -222,6 +222,7 @@
     max-width: 1080px;
     height: clamp(400px, 58vh, 640px);
     flex-shrink: 0;
+    touch-action: none;
   }
   #stage.hidden { display: none; }
 
@@ -239,6 +240,7 @@
       opacity 0.5s ease,
       filter 0.4s ease;
     cursor: pointer;
+    touch-action: none;
     -webkit-tap-highlight-color: transparent;
   }
   .card .face {
@@ -255,14 +257,19 @@
     outline: 1.5px solid var(--gold);
     box-shadow: 0 0 0 1px rgba(201,168,106,0.25), 0 0 22px var(--gold-soft), 0 12px 30px rgba(0,0,0,0.5);
   }
+  .card.magnified { filter: brightness(1.15); }
+  .card.magnified .face {
+    outline: 1.5px solid var(--gold);
+    box-shadow: 0 0 0 1px rgba(201,168,106,0.3), 0 0 30px var(--gold-soft), 0 22px 44px rgba(0,0,0,0.55);
+  }
   .card.dimmed { opacity: 0.2; pointer-events: none; }
 
   /* ── 뽑힌 3장 대기 줄 ───────────────── */
   #chosenRow {
     display: none;
-    gap: clamp(16px, 4vw, 40px);
+    gap: clamp(10px, 4vw, 40px);
     justify-content: center;
-    padding: 10px 20px 30px;
+    padding: 10px 14px 30px;
   }
   #chosenRow.on { display: flex; }
   .chosen {
@@ -281,7 +288,7 @@
   }
   body.lang-en .chosen .pos-kr { letter-spacing: 0.14em; }
   .chosen .mini {
-    width: clamp(150px, 21vw, 205px);
+    width: clamp(78px, 24vw, 205px);
     aspect-ratio: 2 / 3;
     border-radius: 8px;
     overflow: hidden;
@@ -474,7 +481,7 @@
     flex-wrap: wrap;
   }
   .sum-card {
-    width: clamp(165px, 24vw, 220px);
+    width: clamp(84px, 24vw, 220px);
     text-align: center;
     cursor: pointer;
     opacity: 0;
@@ -882,23 +889,24 @@ function fanOut() {
   const gap = SPEEDS[cfg.speed];
   els.forEach((el, i) => {
     const ang = start + (spread / (n - 1)) * i;
+    el.dataset.ang = ang;
     setTimeout(() => { el.style.transform = `rotate(${ang}deg)`; }, 90 + i * gap);
   });
   setTimeout(() => {
     guide.textContent = T().guidePick;
     phase = "pick";
+    // 선택 단계부터는 돋보기 확대가 즉각 반응하도록 전환 속도를 빠르게 전환
+    els.forEach(el => {
+      el.style.transition = "transform 0.16s cubic-bezier(0.22,0.9,0.3,1), opacity 0.5s ease, filter 0.3s ease";
+    });
   }, 90 + n * gap + 500);
 }
 
 /* ── 3. 선택 ── */
-function onCardClick(e) {
-  const el = e.currentTarget;
-  if (phase === "stack") { fanOut(); return; }
+function confirmPick(el) {
   if (phase !== "pick" || el.classList.contains("picked")) return;
-
   el.classList.add("picked");
-  const m = el.style.transform.match(/rotate\(([-\d.]+)deg\)/);
-  const ang = m ? parseFloat(m[1]) : 0;
+  const ang = el.dataset.ang || 0;
   el.style.transform = `rotate(${ang}deg) translateY(-26px)`;
 
   picked.push(parseInt(el.dataset.i));
@@ -908,6 +916,58 @@ function onCardClick(e) {
     phase = "chosen";
     setTimeout(showChosen, 650);
   }
+}
+
+function onCardClick(e) {
+  const el = e.currentTarget;
+  if (phase === "stack") { fanOut(); return; }
+  if (isCoarsePointer) return; // 터치 기기는 돋보기 드래그 흐름(pointerup)에서 확정
+  confirmPick(el);
+}
+
+/* ── 3b. 모바일 돋보기 선택 ──
+   터치로 누르면 손끝 아래 카드가 확대되어 뜨고, 손을 떼면 그 카드가 선택된다.
+   누른 채로 옆 카드로 옮기면 확대 대상도 따라 바뀐다 (부채꼴 카드를 훑어보는 느낌). */
+const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
+let magnifiedEl = null;
+
+function pickableCardAt(x, y) {
+  if (phase !== "pick") return null;
+  const el = document.elementFromPoint(x, y)?.closest(".card");
+  if (!el || el.classList.contains("picked") || el.classList.contains("locked") || el.classList.contains("dimmed")) return null;
+  return el;
+}
+function setMagnified(el) {
+  if (magnifiedEl === el) return;
+  if (magnifiedEl) {
+    const prev = magnifiedEl;
+    prev.style.transform = `rotate(${prev.dataset.ang || 0}deg)`;
+    prev.style.zIndex = prev.dataset.baseZ ?? prev.style.zIndex;
+    prev.classList.remove("magnified");
+  }
+  magnifiedEl = el;
+  if (!el) return;
+  el.dataset.baseZ = el.style.zIndex;
+  el.style.zIndex = 999;
+  el.style.transform = `rotate(${el.dataset.ang || 0}deg) translateY(-30px) scale(1.45)`;
+  el.classList.add("magnified");
+}
+if (isCoarsePointer) {
+  stage.addEventListener("pointerdown", e => {
+    if (phase !== "pick") return;
+    const el = pickableCardAt(e.clientX, e.clientY);
+    if (el) { stage.setPointerCapture(e.pointerId); setMagnified(el); }
+  });
+  stage.addEventListener("pointermove", e => {
+    if (phase !== "pick" || e.buttons === 0) return;
+    setMagnified(pickableCardAt(e.clientX, e.clientY));
+  });
+  stage.addEventListener("pointerup", e => {
+    const el = magnifiedEl;
+    setMagnified(null);
+    if (el) confirmPick(el);
+  });
+  stage.addEventListener("pointercancel", () => setMagnified(null));
 }
 
 /* ── 4. 뽑힌 3장 대기 ── */
