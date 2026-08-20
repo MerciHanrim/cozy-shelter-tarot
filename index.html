@@ -226,6 +226,26 @@
   }
   #stage.hidden { display: none; }
 
+  /* ── 인트로: 손이 덱을 집어 부채꼴로 펼치는 연출 ──
+     세 포즈(집기/옮기기/펼치기)를 짧게 겹쳐서 크로스페이드한다 — 손이 화면에서
+     완전히 사라지는 순간 없이 계속 떠 있는 상태로 포즈만 바뀌어 보이게. */
+  .hand-seq {
+    position: absolute;
+    left: 50%;
+    top: 55%;
+    width: clamp(200px, 34vw, 340px);
+    pointer-events: none;
+    user-select: none;
+    z-index: 900;
+    opacity: 0;
+    filter: drop-shadow(0 12px 22px rgba(0,0,0,0.5));
+    transition: opacity 0.5s ease;
+  }
+  .hand-seq.in { opacity: 1; }
+  .hand-grab  { transform: translate(-30%, -84%); }
+  .hand-tilt  { transform: translate(-22%, -86%); }
+  .hand-sweep { transform: translate(-26%, -88%); }
+
   .card {
     position: absolute;
     left: 50%;
@@ -876,7 +896,8 @@ function buildStack() {
     el.className = "card";
     el.dataset.i = i;
     const jx = (Math.random() - 0.5) * 6;
-    const jr = FAN_START + (Math.random() - 0.5) * 4;
+    const jr = (Math.random() - 0.5) * 5; // 손이 놓아주기 전까지는 거의 수직으로 세워진 채 쌓여있다
+    el.dataset.jx = jx;
     el.style.transform = `translate(${jx}px, ${-i * 0.6}px) rotate(${jr}deg)`;
     el.style.zIndex = i;
     el.dataset.baseZ = i;
@@ -885,7 +906,53 @@ function buildStack() {
     stage.appendChild(el);
     els.push(el);
   });
-  guide.textContent = T().guideStack;
+  guide.textContent = "";
+  phase = "intro";
+  playHandIntro();
+}
+
+/* ── 0b. 손이 덱을 집어 부채꼴로 펼치는 인트로 ──
+   집기 → 옮기기(기울임) → 펼치기 세 포즈를 짧게 겹쳐 넘기고, 펼치기 포즈가
+   뜨는 순간 실제 fanOut()을 같이 실행해서 손이 카드를 펼치는 것처럼 보이게 한다. */
+function playHandIntro() {
+  const mk = (cls, src) => {
+    const img = document.createElement("img");
+    img.src = src;
+    img.alt = "";
+    img.draggable = false;
+    img.className = `hand-seq ${cls}`;
+    stage.appendChild(img);
+    return img;
+  };
+  const grab = mk("hand-grab", "assets/hand/card-grab-only.png");
+  const tilt = mk("hand-tilt", "assets/hand/card-tilt-only.png");
+  const sweep = mk("hand-sweep", "assets/hand/card-sweep-only.png");
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => grab.classList.add("in"));
+  });
+
+  // 집기 → 옮기기: 손이 카드를 쥐고 부채꼴이 열릴 방향(왼쪽 끝)으로 함께 기울인다
+  setTimeout(() => {
+    tilt.classList.add("in");
+    els.forEach(el => {
+      const jx = el.dataset.jx || 0;
+      const jr = FAN_START + (Math.random() - 0.5) * 4;
+      el.style.transform = `translate(${jx}px, 0px) rotate(${jr}deg)`;
+    });
+  }, 500);
+  setTimeout(() => grab.classList.remove("in"), 640);
+
+  // 옮기기 → 펼치기: 손이 쓸어 여는 것과 동시에 실제 카드도 펼쳐진다
+  setTimeout(() => {
+    sweep.classList.add("in");
+    fanOut();
+  }, 1050);
+  setTimeout(() => tilt.classList.remove("in"), 1190);
+
+  // 손 퇴장
+  setTimeout(() => sweep.classList.remove("in"), 1750);
+  setTimeout(() => { grab.remove(); tilt.remove(); sweep.remove(); }, 2250);
 }
 
 /* ── 2. 펼침 ── */
