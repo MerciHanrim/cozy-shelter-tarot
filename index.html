@@ -872,6 +872,7 @@ function buildStack() {
     const jr = (Math.random() - 0.5) * 5;
     el.style.transform = `translate(${jx}px, ${-i * 0.6}px) rotate(${jr}deg)`;
     el.style.zIndex = i;
+    el.dataset.baseZ = i;
     el.innerHTML = `<div class="face"><img src="${backSrc()}" alt="" draggable="false"></div>`;
     el.addEventListener("click", onCardClick);
     stage.appendChild(el);
@@ -897,7 +898,7 @@ function fanOut() {
     phase = "pick";
     // 선택 단계부터는 돋보기 확대가 즉각 반응하도록 전환 속도를 빠르게 전환
     els.forEach(el => {
-      el.style.transition = "transform 0.16s cubic-bezier(0.22,0.9,0.3,1), opacity 0.5s ease, filter 0.3s ease";
+      el.style.transition = "transform 0.2s cubic-bezier(0.22,1,0.36,1), opacity 0.5s ease, filter 0.3s ease";
     });
   }, 90 + n * gap + 500);
 }
@@ -937,20 +938,31 @@ function pickableCardAt(x, y) {
   if (!el || el.classList.contains("picked") || el.classList.contains("locked") || el.classList.contains("dimmed")) return null;
   return el;
 }
+// 손끝이 닿은 카드를 중심으로 이웃 카드까지 부드럽게 이어지는 돋보기 곡선
+// (거리 0 → 대상 카드, 1~2 → 옆 카드가 옅게 따라 뜬다. macOS Dock 확대 느낌)
+const MAGNIFY_FALLOFF = [
+  { scale: 1.22, lift: -22, z: 500 },
+  { scale: 1.10, lift: -11, z: 420 },
+  { scale: 1.03, lift: -4,  z: 380 },
+];
 function setMagnified(el) {
   if (magnifiedEl === el) return;
-  if (magnifiedEl) {
-    const prev = magnifiedEl;
-    prev.style.transform = `rotate(${prev.dataset.ang || 0}deg)`;
-    prev.style.zIndex = prev.dataset.baseZ ?? prev.style.zIndex;
-    prev.classList.remove("magnified");
-  }
   magnifiedEl = el;
-  if (!el) return;
-  el.dataset.baseZ = el.style.zIndex;
-  el.style.zIndex = 999;
-  el.style.transform = `rotate(${el.dataset.ang || 0}deg) translateY(-30px) scale(1.45)`;
-  el.classList.add("magnified");
+  const targetPos = el ? parseInt(el.dataset.i) : null;
+  els.forEach(c => {
+    if (c.classList.contains("picked") || c.classList.contains("locked")) return;
+    const ang = c.dataset.ang || 0;
+    const dist = targetPos === null ? Infinity : Math.abs(parseInt(c.dataset.i) - targetPos);
+    const f = MAGNIFY_FALLOFF[dist];
+    c.classList.toggle("magnified", dist === 0);
+    if (f) {
+      c.style.zIndex = f.z;
+      c.style.transform = `rotate(${ang}deg) translateY(${f.lift}px) scale(${f.scale})`;
+    } else {
+      c.style.zIndex = c.dataset.baseZ ?? c.style.zIndex;
+      c.style.transform = `rotate(${ang}deg)`;
+    }
+  });
 }
 let dragRAF = null, dragX = 0, dragY = 0;
 function queueMagnifyUpdate(x, y) {
