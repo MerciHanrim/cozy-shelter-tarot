@@ -4,6 +4,16 @@
 
 **Live:** https://cozy-shelter-tarot.workers.dev <!-- 실제 배포 주소로 교체 -->
 
+## 스크린샷
+
+| 설정 | 카드 펼침 | 세 장 선택 완료 |
+|---|---|---|
+| ![설정](assets/screenshot/cozy-shelter-tarot-0.jpg) | ![카드 펼침](assets/screenshot/cozy-shelter-tarot-1.jpg) | ![세 장 선택 완료](assets/screenshot/cozy-shelter-tarot-2.jpg) |
+
+| 카드 리딩 | 오늘의 요약 |
+|---|---|
+| ![카드 리딩](assets/screenshot/cozy-shelter-tarot-3.jpg) | ![오늘의 요약](assets/screenshot/cozy-shelter-tarot-4.jpg) |
+
 ## 덱 (Decks)
 
 - **고서 (Antique)** — `assets/v1`
@@ -13,9 +23,11 @@
 ## 구조
 
 ```
-index.html      메인 페이지 (전체 로직 포함)
-assets/v1..v3   덱별 카드 이미지 (webp)
-wrangler.jsonc  Cloudflare Worker 정적 배포 설정
+index.html          메인 페이지 (전체 로직 포함)
+assets/v1..v3       덱별 카드 이미지 (webp)
+assets/ci           Cozy Shelter 브랜드 심볼 (헤더/파비콘)
+assets/screenshot   README용 스크린샷
+wrangler.jsonc      Cloudflare Worker 정적 배포 설정
 ```
 
 ## 배포
