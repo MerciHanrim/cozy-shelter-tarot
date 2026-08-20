@@ -901,9 +901,11 @@ function fanOut() {
   setTimeout(() => {
     guide.textContent = T().guidePick;
     phase = "pick";
-    // 선택 단계부터는 돋보기 확대가 즉각 반응하도록 전환 속도를 빠르게 전환
+    // 선택 단계부터는 돋보기 스프링 루프(JS)가 매 프레임 직접 값을 갱신하므로
+    // CSS transition을 두면 이중으로 보간되어 어긋난다. transform 트랜지션은
+    // 끄고, 확정(pick) 시의 팝 애니메이션만 confirmPick에서 그때그때 건다.
     els.forEach(el => {
-      el.style.transition = "transform 0.12s cubic-bezier(0.22,1,0.36,1), opacity 0.5s ease, filter 0.3s ease";
+      el.style.transition = "opacity 0.5s ease, filter 0.3s ease";
     });
   }, 90 + n * gap + 500);
 }
@@ -912,7 +914,9 @@ function fanOut() {
 function confirmPick(el) {
   if (phase !== "pick" || el.classList.contains("picked")) return;
   el.classList.add("picked");
+  magState.delete(el);
   const ang = el.dataset.ang || 0;
+  el.style.transition = "transform 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.5s ease, filter 0.3s ease";
   el.style.transform = `rotate(${ang}deg) translateY(-26px)`;
 
   picked.push(parseInt(el.dataset.i));
