@@ -4,7 +4,7 @@
 
 A daily tarot draw web app — pull one card a day. Supports all 22 Major Arcana cards across three deck themes, in Korean and English. Plain static HTML/CSS/JS, no build step.
 
-**Live:** https://cozy-shelter-tarot.workers.dev <!-- replace with the actual deployed URL -->
+**Live:** https://cozy-tarot.pages.dev/
 
 ## Screenshots
 
