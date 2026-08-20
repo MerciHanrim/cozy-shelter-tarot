@@ -1001,6 +1001,9 @@ function startMagLoop() {
   magLoopRunning = true;
   requestAnimationFrame(magnifyTick);
 }
+// 터치: 누른 채로 드래그해야 미리보기가 뜨고, 손을 떼면 그 카드가 선택된다.
+// 마우스: 누르지 않아도 부채꼴 위를 지나가기만 하면(hover) 같은 캐스케이드가
+// 따라오고, 클릭하면 그 카드가 선택된다(클릭 확정은 각 카드의 click 리스너에서 처리).
 if (isCoarsePointer) {
   stage.addEventListener("pointerdown", e => {
     if (phase !== "pick") return;
@@ -1022,6 +1025,16 @@ if (isCoarsePointer) {
   stage.addEventListener("pointercancel", () => {
     dragActive = false;
     magnifiedEl = null;
+  });
+} else {
+  stage.addEventListener("pointermove", e => {
+    if (phase !== "pick") return;
+    pointerX = e.clientX;
+    dragActive = true;
+    startMagLoop();
+  });
+  stage.addEventListener("pointerleave", () => {
+    dragActive = false;
   });
 }
 
