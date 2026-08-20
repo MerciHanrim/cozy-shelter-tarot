@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<!--
+  Cozy Shelter Tarot — Today's Cards
+  © 2026 Hanrim (cozyshelter.tistory.com)
+  All text and card artwork are original works.
+  English edition written by Lumi.
+  Unauthorized reproduction or redistribution is prohibited.
+-->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="Hanrim">
+<meta name="copyright" content="© 2026 Hanrim · Cozy Shelter">
+<title>Cozy Shelter · 오늘의 카드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --night: #141b28;
+    --night-soft: #1c2536;
+    --panel: #1a2334;
+    --ivory: #f0ead9;
+    --ivory-dim: #b9b3a2;
+    --mist: #93a0b5;
+    --gold: #c9a86a;
+    --gold-soft: rgba(201, 168, 106, 0.35);
+    --rose: #c08577;
+    --line: rgba(240, 234, 217, 0.14);
+    --card-w: min(16vw, 156px);
+    --card-r: calc(var(--card-w) * 1.5);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    min-height: 100%;
+    background:
+      radial-gradient(ellipse 120% 80% at 50% -10%, #232f45 0%, var(--night) 55%),
+      var(--night);
+    color: var(--ivory);
+    font-family: 'Gowun Batang', serif;
+    overflow-x: hidden;
+  }
+
+  body { display: flex; flex-direction: column; align-items: center; }
+  img { -webkit-user-drag: none; user-select: none; }
+
+  /* ── 헤더 ─────────────────────────── */
+  header {
+    text-align: center;
+    padding: clamp(26px, 4.5vh, 50px) 20px 0;
+    width: 100%;
+    position: relative;
+    z-index: 5;
+  }
+  .eyebrow {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    letter-spacing: 0.42em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 14px;
+  }
+  h1 {
+    font-weight: 400;
+    font-size: clamp(26px, 4vw, 38px);
+    letter-spacing: 0.14em;
+  }
+  body.lang-en h1 { font-family: 'Cormorant Garamond', serif; letter-spacing: 0.1em; }
+  .guide {
+    margin-top: 14px;
+    font-size: 15.5px;
+    color: var(--ivory-dim);
+    letter-spacing: 0.06em;
+    line-height: 1.9;
+    min-height: 1.9em;
+    transition: opacity 0.5s ease;
+  }
+
+  /* ── 설정 버튼 / 패널 ───────────────── */
+  #gear {
+    position: fixed;
+    top: 18px; right: 18px;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: rgba(20, 27, 40, 0.7);
+    color: var(--ivory-dim);
+    font-size: 17px;
+    cursor: pointer;
+    z-index: 60;
+    transition: color 0.3s, border-color 0.3s, transform 0.5s;
+    backdrop-filter: blur(4px);
+  }
+  #gear:hover { color: var(--gold); border-color: var(--gold-soft); transform: rotate(40deg); }
+
+  #settings {
+    position: fixed;
+    top: 0; right: 0;
+    width: min(370px, 92vw);
+    height: 100%;
+    background: var(--panel);
+    border-left: 1px solid var(--line);
+    box-shadow: -20px 0 50px rgba(0,0,0,0.45);
+    z-index: 70;
+    padding: 30px 26px;
+    transform: translateX(105%);
+    transition: transform 0.5s cubic-bezier(0.25, 0.9, 0.3, 1);
+    overflow-y: auto;
+  }
+  #settings.open { transform: none; }
+  #settings h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 26px;
+  }
+  #settingsClose {
+    position: absolute;
+    top: 22px; right: 22px;
+    background: none; border: none;
+    color: var(--mist);
+    font-size: 18px;
+    cursor: pointer;
+  }
+  .set-group { margin-bottom: 30px; }
+  .set-label {
+    font-size: 13px;
+    color: var(--ivory-dim);
+    letter-spacing: 0.16em;
+    margin-bottom: 12px;
+  }
+  .deck-opts { display: flex; gap: 12px; }
+  .deck-opt {
+    flex: 1;
+    background: none;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px 8px 9px;
+    cursor: pointer;
+    color: var(--ivory-dim);
+    font-family: 'Gowun Batang', serif;
+    font-size: 13.5px;
+    letter-spacing: 0.14em;
+    transition: border-color 0.3s, color 0.3s;
+  }
+  .deck-opt img {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-radius: 5px;
+    display: block;
+    margin-bottom: 8px;
+    opacity: 0.85;
+  }
+  .deck-opt.sel { border-color: var(--gold); color: var(--gold); }
+  .deck-opt.sel img { opacity: 1; }
+
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; }
+  .toggle {
+    width: 46px; height: 24px;
+    border-radius: 24px;
+    border: 1px solid var(--line);
+    background: rgba(0,0,0,0.3);
+    position: relative;
+    cursor: pointer;
+    transition: background 0.3s, border-color 0.3s;
+  }
+  .toggle::after {
+    content: "";
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--mist);
+    transition: transform 0.3s, background 0.3s;
+  }
+  .toggle.on { background: rgba(201,168,106,0.25); border-color: var(--gold-soft); }
+  .toggle.on::after { transform: translateX(22px); background: var(--gold); }
+
+  .seg { display: flex; border: 1px solid var(--line); border-radius: 100px; overflow: hidden; }
+  .seg button {
+    flex: 1;
+    background: none; border: none;
+    color: var(--mist);
+    font-family: 'Gowun Batang', serif;
+    font-size: 12.5px;
+    letter-spacing: 0.1em;
+    padding: 9px 0;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+  }
+  .seg button.sel { background: rgba(201,168,106,0.18); color: var(--gold); }
+  .set-note { font-size: 11.5px; color: var(--mist); line-height: 1.8; margin-top: 8px; word-break: keep-all; }
+
+  #dim {
+    position: fixed; inset: 0;
+    background: rgba(8, 11, 18, 0.5);
+    z-index: 65;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s;
+  }
+  #dim.on { opacity: 1; pointer-events: auto; }
+
+  /* ── 무대 ─────────────────────────── */
+  #stage {
+    position: relative;
+    width: 100%;
+    max-width: 1080px;
+    height: clamp(400px, 58vh, 640px);
+    flex-shrink: 0;
+  }
+  #stage.hidden { display: none; }
+
+  .card {
+    position: absolute;
+    left: 50%;
+    top: 55%;
+    width: var(--card-w);
+    height: var(--card-r);
+    margin-left: calc(var(--card-w) / -2);
+    margin-top: calc(var(--card-r) / -2);
+    transform-origin: 50% 120%;
+    transition:
+      transform var(--fan-ms, 0.9s) cubic-bezier(0.22, 0.9, 0.3, 1),
+      opacity 0.5s ease,
+      filter 0.4s ease;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .card .face {
+    position: absolute;
+    inset: 0;
+    border-radius: 7px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.5), 0 10px 26px rgba(0,0,0,0.45);
+    outline: 1px solid var(--line);
+  }
+  .card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .card:hover:not(.picked):not(.locked) { filter: brightness(1.18); }
+  .card.picked .face {
+    outline: 1.5px solid var(--gold);
+    box-shadow: 0 0 0 1px rgba(201,168,106,0.25), 0 0 22px var(--gold-soft), 0 12px 30px rgba(0,0,0,0.5);
+  }
+  .card.dimmed { opacity: 0.2; pointer-events: none; }
+
+  /* ── 뽑힌 3장 대기 줄 ───────────────── */
+  #chosenRow {
+    display: none;
+    gap: clamp(16px, 4vw, 40px);
+    justify-content: center;
+    padding: 10px 20px 30px;
+  }
+  #chosenRow.on { display: flex; }
+  .chosen {
+    text-align: center;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+    cursor: default;
+  }
+  .chosen.in { opacity: 1; transform: none; }
+  .chosen .pos-kr {
+    font-size: 13.5px;
+    color: var(--ivory-dim);
+    letter-spacing: 0.24em;
+    margin-bottom: 12px;
+  }
+  body.lang-en .chosen .pos-kr { letter-spacing: 0.14em; }
+  .chosen .mini {
+    width: clamp(150px, 21vw, 205px);
+    aspect-ratio: 2 / 3;
+    border-radius: 8px;
+    overflow: hidden;
+    outline: 1px solid var(--line);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.5);
+  }
+  .chosen .mini img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  #beginReading {
+    display: none;
+    margin: 4px auto 50px;
+    background: var(--gold);
+    border: none;
+    color: var(--night);
+    font-family: 'Gowun Batang', serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    padding: 13px 40px 13px 44px;
+    border-radius: 100px;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.7s ease, transform 0.3s ease;
+  }
+  body.lang-en #beginReading { letter-spacing: 0.14em; padding: 13px 40px; }
+  #beginReading.on { display: block; opacity: 1; pointer-events: auto; }
+  #beginReading:hover { transform: translateY(-2px); }
+
+  /* ── 집중 리딩 ─────────────────────── */
+  #focus {
+    display: none;
+    width: 100%;
+    max-width: 920px;
+    padding: 10px 24px 40px;
+  }
+  #focus.on { display: block; }
+  .focus-head { text-align: center; margin-bottom: 20px; }
+  .focus-step {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 12px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--mist);
+    margin-bottom: 6px;
+  }
+  .focus-pos {
+    font-size: 19px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+  }
+  body.lang-en .focus-pos { font-family: 'Cormorant Garamond', serif; letter-spacing: 0.16em; }
+  .focus-body {
+    display: flex;
+    gap: clamp(26px, 5vw, 56px);
+    align-items: flex-start;
+    justify-content: center;
+  }
+  .focus-cardwrap {
+    flex-shrink: 0;
+    width: clamp(190px, 26vw, 238px);
+    perspective: 1500px;
+  }
+  .focus-flip {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    transform-style: preserve-3d;
+    transition: transform 1.1s cubic-bezier(0.3, 0.75, 0.28, 1);
+  }
+  .focus-flip.open { transform: rotateY(180deg); }
+  .focus-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border-radius: 10px;
+    overflow: hidden;
+    outline: 1px solid var(--line);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.55);
+  }
+  .focus-face img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .focus-face.front { transform: rotateY(180deg); }
+  .focus-flip.open .focus-face.front {
+    outline: 1px solid rgba(201,168,106,0.55);
+    box-shadow: 0 0 28px var(--gold-soft), 0 16px 40px rgba(0,0,0,0.55);
+  }
+  .focus-face.front img.rev { transform: rotate(180deg); }
+
+  .focus-text {
+    max-width: 545px;
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.8s ease 0.55s, transform 0.8s ease 0.55s;
+  }
+  .focus-text.in { opacity: 1; transform: none; }
+  .f-name-en {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .f-name-kr {
+    font-size: 14px;
+    color: var(--ivory-dim);
+    letter-spacing: 0.3em;
+    margin-top: 5px;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 11.5px;
+    letter-spacing: 0.24em;
+    padding: 4px 12px 3px 14px;
+    border-radius: 100px;
+    margin-top: 12px;
+  }
+  body.lang-en .badge { letter-spacing: 0.14em; padding: 4px 13px 3px; }
+  .badge.up  { color: var(--gold); border: 1px solid var(--gold-soft); }
+  .badge.rev { color: var(--rose); border: 1px solid rgba(192,133,119,0.4); }
+  .f-keyword {
+    font-size: 13px;
+    color: var(--mist);
+    letter-spacing: 0.1em;
+    margin-top: 14px;
+  }
+  body.lang-en .f-keyword { font-family: 'Cormorant Garamond', serif; font-size: 15px; letter-spacing: 0.06em; }
+  .f-decl {
+    font-size: 17.5px;
+    line-height: 1.9;
+    color: var(--ivory);
+    margin: 22px 0 20px;
+    padding-left: 16px;
+    border-left: 2px solid var(--gold);
+    word-break: keep-all;
+  }
+  body.lang-en .f-decl {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20.5px;
+    line-height: 1.7;
+  }
+  .f-reading p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--ivory-dim);
+    word-break: keep-all;
+    margin-bottom: 1.1em;
+  }
+  body.lang-en .f-reading p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    line-height: 1.75;
+  }
+  .focus-nav { text-align: center; margin-top: 18px; }
+  .dots { margin-bottom: 13px; }
+  .dots span {
+    display: inline-block;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--line);
+    margin: 0 5px;
+    transition: background 0.4s;
+  }
+  .dots span.cur { background: var(--gold); }
+  #nextCard {
+    background: none;
+    border: 1px solid rgba(201,168,106,0.4);
+    color: var(--gold);
+    font-family: 'Gowun Batang', serif;
+    font-size: 14px;
+    letter-spacing: 0.28em;
+    padding: 12px 36px 12px 40px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+  }
+  body.lang-en #nextCard { letter-spacing: 0.14em; padding: 12px 38px; }
+  #nextCard:hover { background: var(--gold); color: var(--night); }
+
+  /* ── 요약 ─────────────────────────── */
+  #summary {
+    display: none;
+    width: 100%;
+    max-width: 960px;
+    padding: 6px 24px 30px;
+  }
+  #summary.on { display: block; }
+  .sum-grid {
+    display: flex;
+    gap: clamp(16px, 3.5vw, 36px);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .sum-card {
+    width: clamp(165px, 24vw, 220px);
+    text-align: center;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .sum-card.in { opacity: 1; transform: none; }
+  .sum-card .pos-kr {
+    font-size: 13px;
+    color: var(--ivory-dim);
+    letter-spacing: 0.24em;
+    margin-bottom: 12px;
+  }
+  body.lang-en .sum-card .pos-kr { letter-spacing: 0.14em; }
+  .sum-card .pic {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    border-radius: 9px;
+    overflow: hidden;
+    outline: 1px solid var(--line);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+    transition: outline-color 0.3s, box-shadow 0.3s, transform 0.3s;
+  }
+  .sum-card:hover .pic {
+    outline-color: rgba(201,168,106,0.55);
+    box-shadow: 0 0 24px var(--gold-soft), 0 12px 30px rgba(0,0,0,0.5);
+    transform: translateY(-4px);
+  }
+  .sum-card .pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .sum-card .pic img.rev { transform: rotate(180deg); }
+  .s-name-en {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-top: 14px;
+  }
+  .s-name-kr { font-size: 12.5px; color: var(--gold); letter-spacing: 0.22em; margin-top: 3px; }
+  .sum-card .badge { margin-top: 10px; }
+  .s-keyword { font-size: 12px; color: var(--mist); margin-top: 10px; line-height: 1.7; word-break: keep-all; }
+  body.lang-en .s-keyword { font-family: 'Cormorant Garamond', serif; font-size: 13.5px; }
+  .s-decl { font-size: 14px; color: var(--ivory-dim); line-height: 1.9; margin-top: 10px; word-break: keep-all; }
+  body.lang-en .s-decl { font-family: 'Cormorant Garamond', serif; font-size: 16px; line-height: 1.75; }
+  .sum-hint {
+    text-align: center;
+    font-size: 12px;
+    color: var(--mist);
+    margin-top: 14px;
+    letter-spacing: 0.08em;
+  }
+
+  #again {
+    display: block;
+    margin: 16px auto 34px;
+    background: none;
+    border: 1px solid rgba(201,168,106,0.4);
+    color: var(--gold);
+    font-family: 'Gowun Batang', serif;
+    font-size: 14px;
+    letter-spacing: 0.3em;
+    padding: 12px 34px 12px 38px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+  }
+  body.lang-en #again { letter-spacing: 0.14em; padding: 12px 36px; }
+  #again:hover { background: var(--gold); color: var(--night); }
+
+  /* ── 전문 모달 ─────────────────────── */
+  #modal {
+    position: fixed; inset: 0;
+    background: rgba(8, 11, 18, 0.75);
+    backdrop-filter: blur(6px);
+    z-index: 80;
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    overflow-y: auto;
+    padding: 6vh 20px 8vh;
+  }
+  #modal.on { display: flex; }
+  .modal-box {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    max-width: 760px;
+    width: 100%;
+    padding: clamp(26px, 5vw, 46px);
+    position: relative;
+  }
+  #modalClose {
+    position: absolute;
+    top: 18px; right: 20px;
+    background: none; border: none;
+    color: var(--mist);
+    font-size: 20px;
+    cursor: pointer;
+  }
+  .modal-flex { display: flex; gap: clamp(22px, 4vw, 40px); align-items: flex-start; }
+  .modal-pic {
+    flex-shrink: 0;
+    width: clamp(140px, 22vw, 210px);
+    aspect-ratio: 2 / 3;
+    border-radius: 9px;
+    overflow: hidden;
+    outline: 1px solid var(--line);
+  }
+  .modal-pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .modal-pic img.rev { transform: rotate(180deg); }
+
+  @media (max-width: 700px) {
+    .focus-body { flex-direction: column; align-items: center; }
+    .focus-text { text-align: center; }
+    .f-decl { padding-left: 0; border-left: none; padding-top: 14px; border-top: 1px solid var(--gold-soft); }
+    .modal-flex { flex-direction: column; align-items: center; }
+    .modal-flex .focus-text { text-align: center; }
+  }
+  @media (max-width: 640px) {
+    :root { --card-w: 18vw; }
+    #stage { height: 46vh; }
+  }
+  footer {
+    margin-top: auto;
+    padding: 12px 20px 18px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 12.5px;
+    letter-spacing: 0.14em;
+    color: var(--mist);
+    opacity: 0.8;
+    text-align: center;
+    user-select: none;
+  }
+
+  @media (max-height: 960px) {
+    header { padding-top: 16px; }
+    h1 { font-size: clamp(24px, 3.2vw, 30px); }
+    .guide { margin-top: 9px; font-size: 14.5px; }
+    #summary { padding-top: 0; }
+    .sum-card .pos-kr { margin-bottom: 8px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition-duration: 0.01s !important; transition-delay: 0s !important; }
+  }
+</style>
+</head>
+<body>
+
+<button id="gear" title="Settings">⚙</button>
+<div id="dim"></div>
+<aside id="settings">
+  <button id="settingsClose">✕</button>
+  <h2>Settings</h2>
+  <div class="set-group">
+    <div class="set-label" id="labelLang">언어</div>
+    <div class="seg" id="langSeg">
+      <button data-v="ko">한국어</button>
+      <button data-v="en">English</button>
+    </div>
+  </div>
+  <div class="set-group">
+    <div class="set-label" id="labelDeck">덱 선택</div>
+    <div class="deck-opts">
+      <button class="deck-opt" data-deck="v1"><img src="assets/v1/back.webp" alt=""><span id="deckName1">고서</span></button>
+      <button class="deck-opt" data-deck="v2"><img src="assets/v2/back.webp" alt=""><span id="deckName2">밤</span></button>
+      <button class="deck-opt" data-deck="v3"><img src="assets/v3/back.webp" alt=""><span id="deckName3">새벽</span></button>
+    </div>
+    <div class="set-note" id="noteDeck">덱을 바꾸면 새로운 리딩이 시작됩니다.</div>
+  </div>
+  <div class="set-group">
+    <div class="toggle-row">
+      <div class="set-label" style="margin:0" id="labelRev">역방향 사용</div>
+      <div class="toggle" id="revToggle"></div>
+    </div>
+    <div class="set-note" id="noteRev">끄면 모든 카드가 정방향으로만 나옵니다. 다음 리딩부터 적용됩니다.</div>
+  </div>
+  <div class="set-group">
+    <div class="set-label" id="labelSpeed">펼침 속도</div>
+    <div class="seg" id="speedSeg">
+      <button data-v="slow">천천히</button>
+      <button data-v="normal">보통</button>
+      <button data-v="fast">빠르게</button>
+    </div>
+  </div>
+</aside>
+
+<header>
+  <div class="eyebrow">Cozy Shelter Tarot</div>
+  <h1 id="appTitle">오늘의 카드</h1>
+  <div class="guide" id="guide"></div>
+</header>
+
+<div id="stage"></div>
+
+<div id="chosenRow"></div>
+<button id="beginReading"></button>
+
+<section id="focus">
+  <div class="focus-head">
+    <div class="focus-step" id="focusStep"></div>
+    <div class="focus-pos" id="focusPos"></div>
+  </div>
+  <div class="focus-body">
+    <div class="focus-cardwrap">
+      <div class="focus-flip" id="focusFlip">
+        <div class="focus-face back"><img id="focusBack" src="" alt=""></div>
+        <div class="focus-face front"><img id="focusFront" src="" alt=""></div>
+      </div>
+    </div>
+    <div class="focus-text" id="focusText"></div>
+  </div>
+  <div class="focus-nav">
+    <div class="dots" id="dots"><span></span><span></span><span></span></div>
+    <button id="nextCard"></button>
+  </div>
+</section>
+
+<section id="summary">
+  <div class="sum-grid" id="sumGrid"></div>
+  <div class="sum-hint" id="sumHint"></div>
+  <button id="again"></button>
+</section>
+
+<footer>© 2026 Hanrim · Cozy Shelter</footer>
+
+<div id="modal">
+  <div class="modal-box">
+    <button id="modalClose">✕</button>
+    <div class="modal-flex" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+const TAROT_CARDS = [{"id": 0, "nameEn": "The Fool", "i18n": {"ko": {"name": "광대", "keyword": "새로운 시작, 순수, 모험", "declaration": "호기심에 이미 이끌려 가고 있었다.", "reading": "결심하지 않았습니다.\n\n그런데 어느 순간, 이미 가고 있었어요. 무게를 재지 않았고, 준비를 확인하지 않았습니다. 다만 그쪽이 궁금했을 뿐이에요.\n\n두려움보다 호기심이 한 발 먼저였습니다.\n\n결심이라고 부르기엔 너무 가볍고, 충동이라고 부르기엔 너무 자연스러운 이끌림이 있습니다. 어쩌면 이미 그쪽으로 향하고 있었는지도 모릅니다.", "reversedKeyword": "머뭇거림, 산만함, 준비되지 않은 출발", "reversedDeclaration": "가고 싶지만, 아직 발끝이 머뭇거린다.", "reversedReading": "떠나고 싶은 마음은 있습니다.\n\n하지만 발은 아직 같은 자리에 머물러 있습니다. 두려움 때문일 수도 있고, 아직 무엇을 두고 가야 하는지 알지 못해서일 수도 있습니다.\n\n호기심이 사라진 것은 아닙니다.\n\n다만 오늘은 그 호기심이 길이 되기 전에, 한 번 더 자신의 무게를 확인하려는 날인지도 모릅니다."}, "en": {"name": "The Fool", "keyword": "new beginnings, innocence, adventure", "declaration": "Curiosity had already begun to lead the way.", "reading": "You never made a decision.\n\nAnd yet, at some point, you realized you were already on your way. You did not weigh the burden or check whether you were ready. You were simply curious about what lay ahead.\n\nCuriosity took the first step before fear could.\n\nSome impulses are too light to be called decisions, yet too natural to be dismissed as whims. Perhaps you had been moving in that direction long before you noticed.", "reversedKeyword": "hesitation, distraction, an unprepared beginning", "reversedDeclaration": "You want to go, but your feet still hesitate.", "reversedReading": "The desire to leave is there.\n\nBut your feet remain where they are. Perhaps fear is holding you back. Perhaps you still do not know what must be left behind.\n\nYour curiosity has not disappeared.\n\nToday may simply be a day to feel the weight of yourself once more, before curiosity becomes a road."}}}, {"id": 1, "nameEn": "The Magician", "i18n": {"ko": {"name": "마법사", "keyword": "의지, 창조, 가능성", "declaration": "가능성이 형태가 된다.", "reading": "무에서 만든 것이 아닙니다.\n\n바람이 있었고, 땅이 있었고, 그 사이 어딘가에 이미 흐름이 있었습니다. 마법사는 그것을 발명하지 않았어요. 다만 그 흐름이 통과할 수 있도록, 자리를 만들었습니다.\n\n가능성은 형태를 기다리고 있을 때가 있습니다.\n\n어쩌면 지금 손에 있는 것들이, 이미 충분한지도 모릅니다. 아직 형태가 되지 않았을 뿐.", "reversedKeyword": "흩어진 의지, 미완성, 가능성의 지연", "reversedDeclaration": "손에 있지만, 아직 흐르지 않는다.", "reversedReading": "재료는 이미 있습니다.\n\n하지만 그것들이 서로 이어지지 못하고 있습니다. 손에 쥔 것이 부족해서가 아니라, 무엇부터 움직여야 할지 아직 정해지지 않은 상태일 수 있습니다.\n\n가능성은 사라지지 않았습니다.\n\n다만 오늘은 무언가를 더 얻기보다, 이미 가진 것들이 서로 만날 자리를 만들어야 할지도 모릅니다."}, "en": {"name": "The Magician", "keyword": "will, creation, possibility", "declaration": "Possibility takes form.", "reading": "Nothing here was made from nothing.\n\nThere was wind. There was earth. Somewhere between them, a current was already moving. The Magician did not invent it. He simply made a place where it could pass through.\n\nSometimes possibility is only waiting for a form.\n\nWhat you already hold may be enough. It simply has not taken shape yet.", "reversedKeyword": "scattered will, incompletion, delayed potential", "reversedDeclaration": "It is in your hands, but it has not begun to flow.", "reversedReading": "The pieces are already here.\n\nBut they have not found one another yet. The problem may not be that you lack something, but that you have not decided what should move first.\n\nThe possibility has not gone away.\n\nToday may be less about finding more, and more about creating a place where what you already have can meet."}}}, {"id": 2, "nameEn": "The High Priestess", "i18n": {"ko": {"name": "여사제", "keyword": "직관, 침묵, 내면의 지혜", "declaration": "알지만 말하지 않는다.", "reading": "말하지 않는 것이 모르는 것은 아닙니다.\n\n두 기둥 사이에 서 있습니다. 한쪽은 알고 있고, 다른 쪽은 아직 묻지 않았습니다. 그 사이에서 여사제는 움직이지 않아요.\n\n아직 아무도 묻지 않았습니다.\n\n이미 알고 있는 것을, 아직 꺼내지 않았을 뿐인지도 모릅니다.", "reversedKeyword": "막힌 직관, 침묵의 부담, 외면한 앎", "reversedDeclaration": "알고 있지만, 듣지 않으려 한다.", "reversedReading": "이미 느낀 것이 있습니다.\n\n그런데 그것을 모른 척하고 있는지도 모릅니다. 말로 설명되지 않는 감각이라서, 혹은 인정하면 달라져야 할 것 같아서 잠시 밀어두었을 수 있습니다.\n\n침묵은 지혜가 될 수도 있지만, 때로는 회피가 되기도 합니다.\n\n오늘은 바깥의 답보다, 이미 안쪽에서 조용히 올라온 신호를 다시 들어볼 때입니다."}, "en": {"name": "The High Priestess", "keyword": "intuition, silence, inner wisdom", "declaration": "She knows, but does not speak.", "reading": "Silence does not mean not knowing.\n\nShe stands between two pillars. One side is known; the other has not yet been asked. Between them, the High Priestess does not move.\n\nNo one has asked yet.\n\nPerhaps you already know. You simply have not brought the answer into words.", "reversedKeyword": "blocked intuition, the weight of silence, ignored knowing", "reversedDeclaration": "You know, but you are trying not to listen.", "reversedReading": "Something in you has already noticed.\n\nPerhaps you have been pretending not to know because the feeling cannot be explained, or because admitting it would require something to change.\n\nSilence can be wisdom. It can also become avoidance.\n\nToday, rather than searching outside yourself, listen again for the quiet signal that has already risen from within."}}}, {"id": 3, "nameEn": "The Empress", "i18n": {"ko": {"name": "여황제", "keyword": "풍요, 보살핌, 성장", "declaration": "아름다움이 자라게 한다.", "reading": "서두르지 않았습니다.\n\n정원은 명령으로 자라지 않아요. 다만 거기 있었고, 물이 있었고, 계절이 지나갔습니다. 그 결과가 지금 보이는 것들입니다.\n\n여황제는 정원의 주인이 아니에요. 정원과 같은 결을 가진 존재입니다.\n\n보이지 않는 곳에서 자라는 것들이 있습니다. 어쩌면 그것은 이미 오래전부터 자라고 있었는지도 모릅니다.", "reversedKeyword": "돌봄의 과잉, 메마름, 자라지 못하는 것", "reversedDeclaration": "자라야 할 것이 숨을 쉬지 못한다.", "reversedReading": "잘 돌보고 싶었습니다.\n\n하지만 너무 가까이 붙잡고 있으면, 자라야 할 것들이 스스로 뿌리내릴 공간을 잃을 때가 있습니다. 또는 오래 돌보지 못해 메말라 있는 자리도 있을 수 있습니다.\n\n풍요는 밀어붙이는 힘이 아닙니다.\n\n오늘 필요한 것은 더 많이 주는 일이 아니라, 무엇이 숨 쉴 공간을 잃었는지 바라보는 일일지도 모릅니다."}, "en": {"name": "The Empress", "keyword": "abundance, care, growth", "declaration": "Beauty gives things room to grow.", "reading": "Nothing was hurried.\n\nA garden does not grow by command. It was simply there. There was water. The seasons passed. What you see now is the result.\n\nThe Empress is not the owner of the garden. She belongs to the same rhythm as the garden itself.\n\nSome things are growing where you cannot see them. Perhaps they have been growing for much longer than you know.", "reversedKeyword": "overcare, barrenness, stunted growth", "reversedDeclaration": "What should be growing has no room to breathe.", "reversedReading": "You wanted to care for it well.\n\nBut when something is held too closely, it can lose the space it needs to root itself. Elsewhere, there may be places that have gone dry from being left unattended too long.\n\nAbundance is not a force that pushes.\n\nToday may not ask you to give more. It may ask you to notice what has lost the room to breathe."}}}, {"id": 4, "nameEn": "The Emperor", "i18n": {"ko": {"name": "황제", "keyword": "안정, 질서, 책임", "declaration": "그가 있어서 계속된다.", "reading": "무너지지 않았습니다.\n\n다리는 여전히 서 있었습니다. 누군가가 그 자리를 지키고 있었기 때문입니다.\n\n황제는 질서를 만든 사람이 아닙니다. 질서가 계속될 수 있는 조건으로 거기 있는 사람입니다.\n\n어떤 것들은 지속되기 위해 아무것도 하지 않는 것처럼 보입니다. 그러나 그 자리에 있다는 것 자체가, 이미 하나의 역할입니다.", "reversedKeyword": "경직, 통제, 책임의 무게", "reversedDeclaration": "지키려는 마음이 문을 닫고 있다.", "reversedReading": "무너지지 않게 하고 싶었습니다.\n\n그래서 더 단단히 붙잡았는지도 모릅니다. 하지만 오래 붙잡은 질서는 어느 순간 보호가 아니라 압박이 될 수 있습니다.\n\n책임은 모든 것을 혼자 견디는 일이 아닙니다.\n\n오늘은 계속 버티는 것보다, 무엇을 내려놓아도 무너지지 않는지 확인해야 할 때일 수 있습니다."}, "en": {"name": "The Emperor", "keyword": "stability, order, responsibility", "declaration": "Because he remains, things continue.", "reading": "It did not collapse.\n\nThe bridge was still standing because someone had remained at his post.\n\nThe Emperor is not the one who invented order. He is the condition that allows order to continue.\n\nSome roles look like doing nothing at all. Yet simply remaining in place can already be a form of responsibility.", "reversedKeyword": "rigidity, control, the weight of responsibility", "reversedDeclaration": "The wish to protect has begun to close the door.", "reversedReading": "You wanted to keep everything from falling apart.\n\nPerhaps that is why you held on so tightly. But an order held too long can stop protecting and begin to press down.\n\nResponsibility does not mean carrying everything alone.\n\nToday may be a time to discover what you can set down without the whole structure collapsing."}}}, {"id": 5, "nameEn": "The Hierophant", "i18n": {"ko": {"name": "교황", "keyword": "전통, 배움, 안내", "declaration": "잠시 맡고 있을 뿐이다.", "reading": "이 홀은 오래되었습니다.\n\n이 사람의 손에 오기 전에도 있었고, 이 손을 떠난 뒤에도 있을 것입니다. 손은 바뀌었지만, 홀은 계속 전해졌습니다.\n\n교황은 이 역할의 소유자가 아닙니다. 지금 이 자리를 잠시 맡고 있는 사람입니다.\n\n손에 있다는 것과, 내 것이라는 것은 다릅니다.", "reversedKeyword": "낡은 규칙, 빌린 믿음, 역할의 혼동", "reversedDeclaration": "맡은 것을 내 것이라 착각한다.", "reversedReading": "오래 전해진 말이 있습니다.\n\n그 말이 여전히 필요한지, 아니면 단지 익숙해서 붙들고 있는지 구분하기 어려울 수 있습니다. 역할은 때로 사람보다 오래 남지만, 그 역할이 언제나 지금의 답이 되는 것은 아닙니다.\n\n전통은 감옥이 아닙니다.\n\n오늘은 배운 것을 버리는 날이 아니라, 그것이 지금의 나에게도 살아 있는지 조용히 확인하는 날입니다."}, "en": {"name": "The Hierophant", "keyword": "tradition, learning, guidance", "declaration": "It is only entrusted to him for a while.", "reading": "This staff is old.\n\nIt existed before it reached these hands, and it will remain after it leaves them. The hands have changed, but the staff has continued to pass from one keeper to the next.\n\nThe Hierophant does not own this role. He is only the person holding it for now.\n\nTo have something in your hands is not the same as having it belong to you.", "reversedKeyword": "outworn rules, borrowed beliefs, confusion of role and self", "reversedDeclaration": "What was entrusted to you has begun to feel like your possession.", "reversedReading": "Some words have been carried for a very long time.\n\nIt may be difficult to tell whether they are still needed, or whether you keep them only because they are familiar. A role can outlive the person who holds it, but that does not mean it will always contain the answer for the present.\n\nTradition is not a prison.\n\nToday is not about discarding what you were taught. It is about quietly asking whether it is still alive within you."}}}, {"id": 6, "nameEn": "The Lovers", "i18n": {"ko": {"name": "연인", "keyword": "선택, 관계, 조화", "declaration": "거리가 아직 닫히지 않았다.", "reading": "아직 닿지 않았습니다.\n\n한쪽은 이미 내어놓았고, 다른 쪽은 아직 응답하는 중입니다. 그 사이의 거리가 이 카드의 전부예요.\n\n선택은 이미 시작되었습니다. 다만 아직 완성되지 않았습니다.\n\n닫히지 않은 거리 안에만 존재하는 것들이 있습니다.", "reversedKeyword": "망설이는 선택, 닫힌 거리, 관계의 유예", "reversedDeclaration": "거리를 닫지 못한 채 머문다.", "reversedReading": "마음은 이미 움직였는지도 모릅니다.\n\n하지만 아직 손을 내밀지 못했습니다. 선택이 두려운 것이 아니라, 선택 이후의 변화가 두려운 것일 수 있습니다.\n\n관계는 마음만으로 완성되지 않습니다.\n\n오늘은 상대의 응답을 기다리기 전에, 내가 이미 알고 있는 마음을 먼저 인정해야 할지도 모릅니다."}, "en": {"name": "The Lovers", "keyword": "choice, relationship, harmony", "declaration": "The distance between you has not yet closed.", "reading": "You have not touched yet.\n\nOne side has already reached out. The other is still answering. The distance between them is the whole of this card.\n\nThe choice has already begun. It simply has not been completed.\n\nSome things exist only within a distance that has not yet closed.", "reversedKeyword": "hesitant choice, closed distance, a relationship deferred", "reversedDeclaration": "You remain without closing the distance.", "reversedReading": "Your heart may already have moved.\n\nBut your hand has not yet reached out. Perhaps it is not the choice itself you fear, but the changes that will follow it.\n\nA relationship is not completed by feeling alone.\n\nToday, before waiting for another person's answer, you may need to acknowledge what your own heart already knows."}}}, {"id": 7, "nameEn": "The Chariot", "i18n": {"ko": {"name": "전차", "keyword": "추진력, 의지, 승리", "declaration": "의지가 멈추는 순간 흩어진다.", "reading": "두 힘이 같은 방향을 보고 있지 않습니다.\n\n그런데도 전차는 나아갑니다. 왜냐하면 그 위에 누군가가 계속 머물고 있기 때문입니다.\n\n손을 놓는 순간이 아니라, 주의가 흩어지는 순간 멈춥니다.\n\n전차는 계속 나아갑니다. 누군가가 그 자리를 떠나지 않는 동안에는.", "reversedKeyword": "흩어진 방향, 과속, 의지의 소진", "reversedDeclaration": "나아가지만, 어디로 가는지 잊고 있다.", "reversedReading": "움직임은 있습니다.\n\n하지만 그 움직임이 방향을 가지고 있는지는 다시 봐야 합니다. 너무 세게 끌고 가려다 오히려 힘들이 서로 어긋나고 있을 수 있습니다.\n\n전차는 속도만으로 앞으로 가지 않습니다.\n\n오늘은 더 밀어붙이기보다, 무엇이 같은 방향을 보지 못하고 있는지 알아차리는 것이 먼저입니다."}, "en": {"name": "The Chariot", "keyword": "drive, will, victory", "declaration": "The moment attention breaks, the will scatters.", "reading": "The two forces are not facing the same direction.\n\nAnd still, the chariot moves. It moves because someone continues to remain above them.\n\nIt does not stop when the reins are released. It stops when attention is divided.\n\nThe chariot will keep moving for as long as someone does not abandon that place.", "reversedKeyword": "divided direction, reckless speed, exhausted will", "reversedDeclaration": "You are moving, but you have forgotten where you are going.", "reversedReading": "There is movement.\n\nBut it is worth asking whether that movement still has a direction. In trying to pull too hard, you may have caused the forces beneath you to work against one another.\n\nA chariot does not move forward by speed alone.\n\nToday, rather than pushing harder, begin by noticing what is no longer facing the same way."}}}, {"id": 8, "nameEn": "The Strength", "i18n": {"ko": {"name": "힘", "keyword": "용기, 인내, 내면의 힘", "declaration": "물러나지 않는다.", "reading": "가까이 있었습니다.\n\n밀어내지 않았고, 도망치지도 않았습니다. 다만 그 자리에서, 그 앞에서 계속 있었습니다.\n\n사자는 제압된 것이 아닙니다. 다가온 손길을 느끼고 있습니다.\n\n물러나지 않았다는 사실만으로도 달라지는 것들이 있습니다.", "reversedKeyword": "위축, 억눌린 힘, 부드러움의 상실", "reversedDeclaration": "물러서지 않으려다 자신을 잃는다.", "reversedReading": "버티고 있었습니다.\n\n하지만 그 버팀이 용기였는지, 스스로를 몰아붙이는 일이었는지는 다시 살펴야 합니다. 힘은 언제나 강하게 잡는 모습으로만 오지 않습니다.\n\n다가가는 손길이 사라지면, 힘은 쉽게 긴장이 됩니다.\n\n오늘은 이기려 하기보다, 부드럽게 머무를 힘이 아직 남아 있는지 돌아볼 때입니다."}, "en": {"name": "Strength", "keyword": "courage, patience, inner strength", "declaration": "She does not step away.", "reading": "She stayed close.\n\nShe did not push it away, and she did not run. She simply remained there, in front of it.\n\nThe lion has not been subdued. It is feeling the touch that has come near.\n\nSome things begin to change simply because you did not retreat.", "reversedKeyword": "self-doubt, suppressed strength, lost gentleness", "reversedDeclaration": "In refusing to step back, you begin to lose yourself.", "reversedReading": "You have been holding your ground.\n\nBut it is worth asking whether that endurance was courage, or whether you were driving yourself beyond what you could bear. Strength does not always arrive as a tighter grip.\n\nWhen the gentle hand disappears, strength can easily harden into tension.\n\nToday is less about winning and more about asking whether you still have the strength to remain without becoming harsh."}}}, {"id": 9, "nameEn": "The Hermit", "i18n": {"ko": {"name": "은둔자", "keyword": "고독, 성찰, 내면의 빛", "declaration": "다음 한 걸음만 보여도 걷는다.", "reading": "혼자였습니다.\n\n다른 존재가 없었습니다. 길동무도, 목적지의 불빛도 보이지 않았습니다. 다만 등불 하나가 있었고, 그것이 비추는 만큼만 보였습니다.\n\n그 만큼으로 걸었습니다.\n\n전부 보이지 않아도 괜찮았던 것이 아닙니다. 전부 보이지 않아도 걸을 수 있었습니다.", "reversedKeyword": "고립, 닫힌 성찰, 길의 불신", "reversedDeclaration": "등불을 들고도 보지 않는다.", "reversedReading": "혼자 있는 시간이 길어졌습니다.\n\n처음에는 자신을 보기 위한 시간이었지만, 어느 순간 세상과 멀어지는 방식이 되었을지도 모릅니다. 등불은 아직 켜져 있지만, 그것을 어디에 비추어야 할지 잊은 상태일 수 있습니다.\n\n고독은 문이 될 수도 있고 벽이 될 수도 있습니다.\n\n오늘은 혼자라는 사실보다, 그 혼자가 어디를 향하고 있는지 살펴야 합니다."}, "en": {"name": "The Hermit", "keyword": "solitude, reflection, inner light", "declaration": "One visible step is enough to keep walking.", "reading": "He was alone.\n\nThere was no companion, no distant light marking the end of the road. There was only one lantern, and only as much of the path as it could illuminate.\n\nThat was enough for the next step.\n\nIt was not that he felt no fear without seeing the whole road. He simply learned that he could walk without seeing all of it.", "reversedKeyword": "isolation, closed reflection, distrust of the path", "reversedDeclaration": "You carry the lantern, yet refuse to look.", "reversedReading": "Your time alone has grown long.\n\nAt first it may have been a way to see yourself more clearly. Somewhere along the way, it may have become a way of moving farther from the world. The lantern is still lit, but perhaps you have forgotten where to aim it.\n\nSolitude can become a doorway, or a wall.\n\nToday, look beyond the fact that you are alone. Ask where that aloneness is leading you."}}}, {"id": 10, "nameEn": "Wheel of Fortune", "i18n": {"ko": {"name": "운명의 수레바퀴", "keyword": "순환, 변화, 운명", "declaration": "지금 여기 있다.", "reading": "바퀴는 멈추지 않습니다.\n\n올라가는 자리가 있고, 내려가는 자리가 있습니다. 지금 어느 자리에 있는지는 알 수 있어요.\n\n바퀴 위의 모든 자리는, 한때 다른 자리였습니다.\n\n지금 이 자리도 지나갑니다. 지금 여기 있다는 것만은 분명합니다.", "reversedKeyword": "반복, 저항, 흐름을 붙드는 마음", "reversedDeclaration": "바퀴는 도는데, 같은 자리에 머문다.", "reversedReading": "변화는 이미 시작되었을 수 있습니다.\n\n하지만 마음은 아직 이전 자리를 붙들고 있습니다. 지나가는 것을 지나가게 두지 못하면, 움직임 속에서도 같은 장면만 반복될 때가 있습니다.\n\n바퀴를 멈출 수는 없습니다.\n\n오늘은 바뀌는 것을 막기보다, 내가 계속 같은 방식으로 반응하고 있는 것은 아닌지 바라볼 때입니다."}, "en": {"name": "Wheel of Fortune", "keyword": "cycles, change, fate", "declaration": "You are here now.", "reading": "The wheel does not stop.\n\nThere is a place that rises, and a place that descends. You may know where you are now.\n\nEvery place on the wheel has once been somewhere else.\n\nThis place, too, will pass. For now, what is certain is that you are here.", "reversedKeyword": "repetition, resistance, clinging to the current", "reversedDeclaration": "The wheel turns, yet you remain in the same place.", "reversedReading": "Change may already have begun.\n\nBut part of you is still holding the place you used to occupy. When you cannot let what is passing move on, the same scene can repeat even while everything around you changes.\n\nThe wheel cannot be stopped.\n\nToday, rather than resisting what is changing, notice whether you are responding in the same old way."}}}, {"id": 11, "nameEn": "Justice", "i18n": {"ko": {"name": "정의", "keyword": "균형, 진실, 공정", "declaration": "차이를 서둘러 없애지 않는다.", "reading": "저울은 움직이고 있습니다.\n\n한쪽이 더 무겁습니다. 그 사실을 먼저 봅니다. 서둘러 반대쪽을 채우려 하기 전에, 지금 이 기울어짐을 바라봅니다.\n\n차이가 있다는 것을 아는 것과, 그 차이를 당장 없애는 것은 다릅니다.\n\n할 수 있지만 하지 않습니다. 아직 서두를 이유가 없기 때문입니다.", "reversedKeyword": "불균형, 판단의 지연, 외면한 진실", "reversedDeclaration": "기울어진 것을 알면서도 보류한다.", "reversedReading": "무엇이 맞는지 모르는 것은 아닐 수 있습니다.\n\n다만 그 사실을 인정하면 선택해야 하기에, 잠시 판단을 미루고 있는지도 모릅니다. 저울은 이미 기울어져 있는데, 마음만 그것을 아직 모른 척합니다.\n\n공정함은 차가운 결론만을 뜻하지 않습니다.\n\n오늘은 누구를 탓하기 전에, 내가 이미 본 사실을 어디까지 인정할 수 있는지 묻는 날입니다."}, "en": {"name": "Justice", "keyword": "balance, truth, fairness", "declaration": "Do not rush to erase the difference.", "reading": "The scales are moving.\n\nOne side is heavier. First, simply see that. Before rushing to fill the other side, look at the tilt that is already here.\n\nKnowing there is an imbalance is not the same as having to correct it at once.\n\nYou could act, but you do not. There may be no reason to hurry yet.", "reversedKeyword": "imbalance, delayed judgment, truth avoided", "reversedDeclaration": "You see the scales leaning, yet postpone the judgment.", "reversedReading": "It may not be that you do not know what is right.\n\nPerhaps you are delaying the judgment because admitting the truth would require a choice. The scales have already tipped; only the heart is still pretending not to see.\n\nFairness does not always mean a cold verdict.\n\nToday, before placing blame, ask how much of what you have already seen you are willing to admit."}}}, {"id": 12, "nameEn": "The Hanged Man", "i18n": {"ko": {"name": "매달린 사람", "keyword": "희생, 기다림, 관점의 전환", "declaration": "확인하지 않아도 된다.", "reading": "거꾸로 매달려 있습니다. 그런데 눈을 감고 있어요.\n\n무슨 일이 일어나고 있는지 확인하지 않는 것이 아닙니다. 확인하지 않아도 된다는 것을 알고 있는 거예요.\n\n결론은 아직 오지 않았습니다. 그런데 이상하게도, 그것이 문제처럼 느껴지지 않습니다.\n\n지금 반드시 확인해야 하는가. 어쩌면 지금은 매달려 있는 것 자체가, 이미 충분한 상태인지도 모릅니다.", "reversedKeyword": "멈춤의 고착, 회피, 관점의 정체", "reversedDeclaration": "기다림이 더 이상 기다림이 아니다.", "reversedReading": "멈춰 있는 시간이 길어졌습니다.\n\n처음에는 필요한 유예였을 수 있습니다. 하지만 지금은 아무것도 선택하지 않기 위한 안전한 자세가 되었을지도 모릅니다.\n\n확인하지 않아도 되는 때가 있고, 확인해야 하는 때도 있습니다.\n\n오늘은 매달려 있는 이유가 아직 살아 있는지, 아니면 내려오지 않기 위한 이유가 되었는지 살펴야 합니다."}, "en": {"name": "The Hanged Man", "keyword": "surrender, waiting, a shift in perspective", "declaration": "You do not need to check.", "reading": "He hangs upside down, yet his eyes are closed.\n\nIt is not that he refuses to see what is happening. He knows that he does not need to check.\n\nThe answer has not arrived. Strangely, that does not feel like a problem.\n\nMust you know right now? Perhaps, for this moment, being suspended is already enough.", "reversedKeyword": "stagnation, avoidance, a fixed perspective", "reversedDeclaration": "Waiting is no longer truly waiting.", "reversedReading": "The stillness has lasted a long time.\n\nAt first, it may have been a necessary pause. But it may now have become a safe position from which nothing has to be chosen.\n\nThere are times when you do not need to look, and times when you do.\n\nToday, ask whether the reason for remaining suspended is still alive, or whether it has become a reason not to come down."}}}, {"id": 13, "nameEn": "Death", "i18n": {"ko": {"name": "죽음", "keyword": "끝, 변환, 이행", "declaration": "이제 이어지지 않는다.", "reading": "끝났습니다.\n\n다음이 올 것인지는 아직 모릅니다. 다만 이것은, 여기서 이어지지 않습니다.\n\n억지로 계속하려 할 때 드는 피로감이 있습니다. 이미 끝난 것을 끝났다고 부르지 못할 때 생기는 무게가 있어요.\n\n어쩌면 그것은 이미 오래전에 멈춰 있었는지도 모릅니다. 다만 아직 끝났다고 부르지 않았을 뿐.\n\n이어지지 않는다는 것이, 사라진다는 뜻은 아닙니다.", "reversedKeyword": "놓지 못함, 미완의 끝, 변화의 거부", "reversedDeclaration": "끝난 것을 아직 끝이라 부르지 못한다.", "reversedReading": "이미 이어지지 않는 것이 있습니다.\n\n하지만 마음은 아직 그 이름을 붙이지 못하고 있습니다. 끝이라고 부르는 순간 정말 사라질 것 같아서, 오래 멈춘 것을 계속되는 것처럼 안고 있을 수 있습니다.\n\n끝은 벌이 아닙니다.\n\n오늘은 사라지는 것을 재촉하기보다, 이미 멈춘 것을 더는 억지로 끌고 가지 않아도 된다는 사실을 받아들이는 날입니다."}, "en": {"name": "Death", "keyword": "ending, transformation, transition", "declaration": "It does not continue from here.", "reading": "It is over.\n\nYou do not yet know what will come next. But this does not continue from here.\n\nThere is a particular exhaustion in forcing something onward. There is a weight that gathers when you cannot name what has ended.\n\nPerhaps it stopped a long time ago. You simply had not called it an ending yet.\n\nSomething no longer continuing does not mean it has vanished.", "reversedKeyword": "refusal to let go, an unfinished ending, resistance to change", "reversedDeclaration": "You still cannot call what has ended an ending.", "reversedReading": "Something has already stopped continuing.\n\nBut your heart may not yet be able to give it that name. You may be holding what has long been still as though it were still alive, afraid that calling it over will make it disappear completely.\n\nAn ending is not a punishment.\n\nToday is not about forcing anything to vanish. It is about accepting that you no longer have to drag forward what has already stopped."}}}, {"id": 14, "nameEn": "Temperance", "i18n": {"ko": {"name": "절제", "keyword": "균형, 조화, 흐름", "declaration": "흐르도록 둔다.", "reading": "억지로 섞지 않았습니다.\n\n한쪽에서 다른 쪽으로 천천히 옮겨갑니다. 서두르지 않았고, 완성하려 하지 않았어요. 다만 흐르도록 두었을 뿐입니다.\n\n어느 쪽도 다른 쪽을 이기려 하지 않습니다.\n\n흐름은 서두르지 않습니다. 어쩌면 이미 흐르고 있었는지도 모릅니다.", "reversedKeyword": "흐름의 막힘, 조급함, 섞이지 못함", "reversedDeclaration": "흐름을 믿지 못해 손으로 흔든다.", "reversedReading": "천천히 섞이면 되는 것이 있었습니다.\n\n그런데 빨리 맞추고 싶어서, 혹은 불안해서 자꾸만 개입하고 있을 수 있습니다. 흐름은 지나치게 붙잡는 순간 오히려 끊어집니다.\n\n균형은 한 번에 완성되는 모양이 아닙니다.\n\n오늘은 더 조절하려 하기보다, 어디에서 흐름을 막고 있는지 조용히 손을 늦추어볼 때입니다."}, "en": {"name": "Temperance", "keyword": "balance, harmony, flow", "declaration": "Let it flow.", "reading": "Nothing was forced together.\n\nIt moves slowly from one side to the other. There was no hurry, no attempt to finish. It was simply allowed to flow.\n\nNeither side tries to overcome the other.\n\nA current does not hurry. Perhaps it had already been moving before you noticed.", "reversedKeyword": "blocked flow, impatience, what will not blend", "reversedDeclaration": "Unable to trust the current, you shake it with your own hands.", "reversedReading": "Some things only needed time to blend.\n\nBut perhaps you keep intervening because you want them to align quickly, or because uncertainty is difficult to bear. A current can break when it is held too tightly.\n\nBalance is not a shape completed all at once.\n\nToday, rather than adjusting more, soften your hands and notice where you have been interrupting the flow."}}}, {"id": 15, "nameEn": "The Devil", "i18n": {"ko": {"name": "악마", "keyword": "속박, 집착, 해방", "declaration": "사슬은 이미 느슨하다.", "reading": "오늘 당신을 붙들고 있는 것이 생각보다 단단하지 않을 수 있습니다.\n\n벗어나지 못하는 게 아니라, 벗어나려 하지 않았던 것일 수도 있어요.\n\n오랫동안 당연하게 여겨 온 것이, 실은 오래전부터 달라져 있었는지도 모릅니다.\n\n그 고리를 한 번 바라보는 것만으로도 달라지는 것들이 있습니다.", "reversedKeyword": "익숙한 속박, 부정, 벗어나기 전의 망설임", "reversedDeclaration": "느슨한 사슬을 아직 쥐고 있다.", "reversedReading": "묶여 있다고 느꼈습니다.\n\n하지만 이제는 그 사슬이 생각보다 느슨하다는 사실도 어렴풋이 알고 있을지 모릅니다. 문제는 벗어날 수 없다는 믿음보다, 벗어난 뒤의 낯섦일 수 있습니다.\n\n익숙한 불편함은 때로 안전처럼 느껴집니다.\n\n오늘은 고리를 끊어내기보다, 내가 아직 그것을 붙잡고 있는 손을 바라보는 날입니다."}, "en": {"name": "The Devil", "keyword": "bondage, attachment, release", "declaration": "The chain is already loose.", "reading": "What holds you today may not be as strong as it seems.\n\nPerhaps you are not unable to leave. Perhaps, until now, you have not truly tried.\n\nWhat you have accepted as inevitable for so long may have changed long before you noticed.\n\nSometimes, simply looking at the open link is enough to change what follows.", "reversedKeyword": "familiar bondage, denial, hesitation before release", "reversedDeclaration": "You are still holding the loosened chain.", "reversedReading": "You believed you were bound.\n\nBut perhaps you have also begun to sense that the chain is looser than you thought. What frightens you may not be the belief that you cannot leave, but the unfamiliar life that begins afterward.\n\nA familiar discomfort can sometimes feel like safety.\n\nToday is not about breaking the chain by force. It is about looking at the hand that is still holding it."}}}, {"id": 16, "nameEn": "The Tower", "i18n": {"ko": {"name": "탑", "keyword": "변화, 붕괴, 각성", "declaration": "이미 금은 가 있었다.", "reading": "갑작스러운 일처럼 보일 수 있습니다.\n\n무너지는 것들은 대개 하루아침에 무너지지 않습니다. 오랫동안 보이지 않았을 뿐, 그 균열은 이미 거기 있었습니다.\n\n어쩌면 오래전부터 끝나 있었던 것이, 이제야 눈에 들어온 것인지도 모릅니다.\n\n무엇이 이미 달라져 있었는지가, 오늘은 조금 더 선명하게 보일지도 모릅니다.", "reversedKeyword": "균열의 부정, 늦어진 붕괴, 불편한 각성", "reversedDeclaration": "금이 간 곳을 아직 벽이라 부른다.", "reversedReading": "무언가 어긋나 있다는 느낌은 있었을 수 있습니다.\n\n하지만 그것을 보면 많은 것이 달라질 것 같아서, 균열을 장식처럼 지나쳐왔는지도 모릅니다. 탑은 아직 서 있지만, 서 있다는 사실만으로 안전하다고 말할 수는 없습니다.\n\n무너짐은 때로 마지막 사건이 아니라, 오래 미뤄온 인식입니다.\n\n오늘은 무너질까 봐 두려워하기보다, 이미 금이 간 곳을 솔직히 바라볼 때입니다."}, "en": {"name": "The Tower", "keyword": "change, collapse, awakening", "declaration": "The crack was already there.", "reading": "It may look sudden.\n\nBut things rarely collapse in a single day. The fracture was already there; it had simply remained unseen for a long time.\n\nPerhaps something ended long ago and has only now come into view.\n\nToday, what had already changed may become a little harder to ignore.", "reversedKeyword": "denied fractures, delayed collapse, unwelcome awakening", "reversedDeclaration": "You still call the cracked place a wall.", "reversedReading": "You may already have felt that something was wrong.\n\nBut perhaps you passed the fracture as though it were only a mark on the wall, afraid that seeing it clearly would change too much. The tower still stands, but standing alone is not proof of safety.\n\nCollapse is sometimes not the final event, but the recognition that has been postponed.\n\nToday, rather than fearing what might fall, look honestly at what is already cracked."}}}, {"id": 17, "nameEn": "The Star", "i18n": {"ko": {"name": "별", "keyword": "희망, 영감, 회복", "declaration": "별은 원래 거기 있었다.", "reading": "길을 잃은 것처럼 느껴질 때에도, 방향이 사라진 것은 아닐 수 있습니다.\n\n지금 보이지 않는 것과, 원래 없는 것은 다릅니다. 구름이 끼었던 밤에도 별은 그 자리에 있었습니다.\n\n반드시 찾아내야 할 것처럼 느껴질 때가 있습니다. 어쩌면 그것은 이미 오래전부터 거기 있었던 것인지도 모릅니다.\n\n찾아야 하는 게 아니라, 다시 보이기 시작한 것일 수 있어요.", "reversedKeyword": "희망의 유예, 의심, 흐린 시야", "reversedDeclaration": "아직 별을 바라보지 못한다.", "reversedReading": "별이 사라진 것은 아닙니다.\n\n하지만 오늘은 하늘보다 발밑만 바라보고 있는지도 모릅니다. 빛이 없는 것이 아니라, 아직 고개를 들지 못하고 있는 것일 수 있습니다.\n\n회복은 멀리 있는 것이 아닙니다.\n\n다만 오늘은 그것을 믿기보다, 믿지 못하는 자신의 마음을 먼저 쉬게 해야 할지도 모릅니다."}, "en": {"name": "The Star", "keyword": "hope, inspiration, renewal", "declaration": "The star was always there.", "reading": "Even when you feel lost, direction may not be gone.\n\nWhat cannot be seen is not the same as what does not exist. The star remained in its place even on nights when the clouds covered it.\n\nThere are times when you feel you must search for it. Perhaps it has been there all along.\n\nYou may not need to find it. You may only be beginning to see it again.", "reversedKeyword": "hope deferred, doubt, clouded sight", "reversedDeclaration": "You are not yet able to look toward the star.", "reversedReading": "The star has not disappeared.\n\nBut today you may be looking only at the ground beneath your feet. It may not be that there is no light, but that you are not yet ready to raise your head.\n\nRenewal is not somewhere far away.\n\nFor now, rather than forcing yourself to believe, you may need to let the part of you that cannot believe rest first."}}}, {"id": 18, "nameEn": "The Moon", "i18n": {"ko": {"name": "달", "keyword": "무의식, 직관, 환상", "declaration": "방금 무언가 달라진 것 같았다.", "reading": "분명히 느꼈는데, 설명할 수가 없습니다.\n\n착각인지 아닌지 확인하려 할수록, 그 감각은 더 멀어집니다. 달빛 아래에서는 윤곽만 보이고, 그게 전부일 때도 있습니다.\n\n설명할 수 없는 채로 남아 있는 것들이 있습니다.\n\n그것만으로도 충분할지도 모릅니다.", "reversedKeyword": "혼란, 불안의 확대, 감각의 왜곡", "reversedDeclaration": "달빛 아래의 윤곽을 사실이라 단정한다.", "reversedReading": "분명 무언가를 느꼈습니다.\n\n하지만 그 감각이 커지면서, 실제보다 더 많은 그림자를 만들고 있을 수 있습니다. 확인되지 않은 마음은 밤이 깊을수록 쉽게 이야기를 만들어냅니다.\n\n모호함은 적이 아닙니다.\n\n오늘은 모든 것을 해석하려 하기보다, 아직 모르는 것은 모르는 채로 두는 용기가 필요할지도 모릅니다."}, "en": {"name": "The Moon", "keyword": "the unconscious, intuition, illusion", "declaration": "For a moment, something seemed to change.", "reading": "You felt it clearly, but you cannot explain it.\n\nThe more you try to decide whether it was real, the farther the feeling recedes. Under moonlight, sometimes only the outline can be seen, and sometimes that is all there is.\n\nSome things remain without explanation.\n\nThat may already be enough.", "reversedKeyword": "confusion, magnified anxiety, distorted perception", "reversedDeclaration": "You mistake the outline in moonlight for the whole truth.", "reversedReading": "You did feel something.\n\nBut as the feeling grew, it may have begun to cast more shadows than the moment itself contained. An unconfirmed fear can invent many stories as the night deepens.\n\nUncertainty is not the enemy.\n\nToday, instead of interpreting everything, you may need the courage to let what is unknown remain unknown."}}}, {"id": 19, "nameEn": "The Sun", "i18n": {"ko": {"name": "태양", "keyword": "기쁨, 성공, 활력", "declaration": "더 이상 숨지 않는다.", "reading": "증명을 요구하지 않는 날이 있습니다.\n\n설명하지 않아도, 이유를 대지 않아도, 있는 그대로 드러나도 괜찮은 날이 있습니다. 그런 날이 있습니다.\n\n햇빛은 어디에 닿아도 된다고 허락을 구하지 않습니다.\n\n어쩌면 그 빛은 오래전부터 거기 있었는지도 모릅니다.", "reversedKeyword": "가려진 기쁨, 자기검열, 빛의 부담", "reversedDeclaration": "드러나도 되는 것을 다시 숨긴다.", "reversedReading": "밝아도 되는 순간이 있었습니다.\n\n그런데 기쁨을 설명해야 할 것 같고, 드러나는 것이 부담스러워 다시 몸을 낮추고 있을 수 있습니다. 빛은 허락을 구하지 않지만, 우리는 때때로 스스로에게 허락을 주지 못합니다.\n\n숨는 것이 언제나 겸손은 아닙니다.\n\n오늘은 작아지려는 습관보다, 이미 충분히 빛나고 있는 부분을 인정해도 좋습니다."}, "en": {"name": "The Sun", "keyword": "joy, success, vitality", "declaration": "You no longer hide.", "reading": "Some days ask for no proof.\n\nThere are days when you do not have to explain yourself, give a reason, or hide what is plainly there. Such days exist.\n\nSunlight does not ask permission to touch the places it reaches.\n\nPerhaps that light has been there for much longer than you know.", "reversedKeyword": "hidden joy, self-censorship, the burden of being seen", "reversedDeclaration": "You hide again what is allowed to be seen.", "reversedReading": "There was a moment when it was safe to be bright.\n\nBut perhaps joy felt as though it needed an explanation, and being seen became heavy, so you made yourself small again. Light does not ask permission, but sometimes we cannot grant that permission to ourselves.\n\nHiding is not always humility.\n\nToday, instead of shrinking by habit, allow yourself to acknowledge the part of you that is already shining."}}}, {"id": 20, "nameEn": "Judgement", "i18n": {"ko": {"name": "심판", "keyword": "각성, 부활, 소명", "declaration": "우리는 일어섰다.", "reading": "혼자가 아니었습니다.\n\n오랫동안 그 자리에 있었던 것들이, 어느 순간 동시에 움직이기 시작합니다. 왜 지금인지는 알 수 없어요. 다만 지금이었습니다.\n\n어쩌면 오래전부터 준비되어 있었는지도 모릅니다. 그 준비가 스스로에게도 보이지 않았을 뿐.\n\n이미 오래전부터 그 자리에 있었던 것이, 지금 일어서고 있는 것인지도 모릅니다.", "reversedKeyword": "응답의 지연, 깨어남의 두려움, 부름의 회피", "reversedDeclaration": "부름을 들었지만, 아직 일어서지 않는다.", "reversedReading": "어딘가에서 부름이 있었습니다.\n\n하지만 그것이 정말 자신을 향한 것인지 확신하지 못해, 조금 더 누워 있으려 했는지도 모릅니다. 일어선다는 것은 이전의 자리로 돌아갈 수 없다는 뜻이기도 합니다.\n\n깨어남은 언제나 환한 일만은 아닙니다.\n\n오늘은 부름을 외면한 자신을 탓하기보다, 왜 아직 일어서기 어려운지 조용히 들어볼 때입니다."}, "en": {"name": "Judgement", "keyword": "awakening, renewal, calling", "declaration": "We rose.", "reading": "You were not alone.\n\nThings that had remained still for a long time began to move at once. Why now cannot be explained. It was simply time.\n\nPerhaps the preparation had begun long ago, hidden even from those who were preparing.\n\nWhat has been waiting in its place for so long may be rising now.", "reversedKeyword": "a delayed response, fear of awakening, avoiding the call", "reversedDeclaration": "You heard the call, but have not yet risen.", "reversedReading": "A call came from somewhere.\n\nBut perhaps you stayed down a little longer, unsure whether it was truly meant for you. To rise also means accepting that you cannot return unchanged to the place where you were.\n\nAwakening is not always a bright experience.\n\nToday, rather than blaming yourself for not answering, listen quietly to why standing up still feels difficult."}}}, {"id": 21, "nameEn": "The World", "i18n": {"ko": {"name": "세계", "keyword": "완성, 통합, 성취", "declaration": "처음부터 이 안에 있었다.", "reading": "빠진 것이 없습니다.\n\n봄도, 여름도, 이미 지나간 것도, 아직 오지 않은 것도 — 모두 이미 여기 있습니다. 어느 것도 밀려난 적이 없어요.\n\n아직 보이지 않는 것과, 없는 것은 다릅니다. 어쩌면 그것은 아직 눈에 들어오지 않았을 뿐인지도 모릅니다.\n\n이 세계는 완성을 향해 가는 것이 아닙니다. 처음부터 이미 그렇게 있었습니다.", "reversedKeyword": "미완성감, 분리, 닫히지 않은 순환", "reversedDeclaration": "이미 안에 있으면서도 밖을 찾는다.", "reversedReading": "빠진 것이 있다고 느낄 수 있습니다.\n\n그래서 더 찾아야 하고, 더 채워야 하고, 아직 도착하지 못했다고 생각할 수 있습니다. 하지만 어쩌면 문제는 부족함이 아니라, 이미 있는 것들을 하나의 세계로 받아들이지 못하는 데 있을지도 모릅니다.\n\n완성은 더 멀리 있는 모양이 아닙니다.\n\n오늘은 밖에서 마지막 조각을 찾기보다, 이미 여기 있는 것들이 서로 이어져 있음을 천천히 알아보는 날입니다."}, "en": {"name": "The World", "keyword": "completion, wholeness, fulfillment", "declaration": "You were within it from the beginning.", "reading": "Nothing is missing.\n\nSpring, summer, what has already passed, and what has not yet arrived—all of it is already here. Nothing has ever been cast outside.\n\nWhat cannot yet be seen is not the same as what is absent. Perhaps it has simply not entered your sight.\n\nThe world is not moving toward wholeness. It has been whole from the beginning.", "reversedKeyword": "incompletion, separation, an unclosed cycle", "reversedDeclaration": "Though you are already within it, you keep searching outside.", "reversedReading": "You may feel that something is missing.\n\nSo you keep searching, keep adding, and believe you have not yet arrived. But perhaps the problem is not lack. Perhaps it is that you have not yet accepted what is already here as one world.\n\nCompletion is not a shape waiting somewhere farther away.\n\nToday, rather than searching outside for the final piece, slowly notice how what is already here belongs together."}}}];
+
+const I18N = {
+  ko: {
+    docTitle: "Cozy Shelter · 오늘의 카드",
+    title: "오늘의 카드",
+    guideStack: "덱을 눌러 카드를 펼쳐 보세요",
+    guidePick: "마음이 머무는 곳에서, 세 장을 골라주세요",
+    guideRemain: ["이제 두 장 남았어요", "마지막 한 장이에요", ""],
+    guideChosen: "오늘의 세 장이 정해졌어요",
+    guideSummary: "오늘 하루, 세 장의 흐름과 함께하세요",
+    begin: "첫 번째 카드 읽기",
+    next: "다음 카드",
+    toSummary: "오늘의 정리 보기",
+    again: "다시 뽑기",
+    sumHint: "카드를 누르면 전문을 다시 볼 수 있어요",
+    upright: "정방향", reversed: "역방향",
+    positions: ["상황", "조언", "결과"],
+    steps: ["첫 번째 카드", "두 번째 카드", "세 번째 카드"],
+    setLang: "언어", setDeck: "덱 선택",
+    deckNames: ["고서", "밤", "새벽"],
+    noteDeck: "덱을 바꾸면 새로운 리딩이 시작됩니다.",
+    setRev: "역방향 사용",
+    noteRev: "끄면 모든 카드가 정방향으로만 나옵니다. 다음 리딩부터 적용됩니다.",
+    setSpeed: "펼침 속도",
+    speeds: ["천천히", "보통", "빠르게"],
+  },
+  en: {
+    docTitle: "Cozy Shelter · Today’s Cards",
+    title: "Today’s Cards",
+    guideStack: "Tap the deck to spread the cards",
+    guidePick: "Choose three cards where your attention comes to rest",
+    guideRemain: ["Two cards remain", "One last card", ""],
+    guideChosen: "Your three cards have been chosen",
+    guideSummary: "Carry the flow of these three cards with you today",
+    begin: "Read the First Card",
+    next: "Next Card",
+    toSummary: "See Today’s Reading",
+    again: "Draw Again",
+    sumHint: "Tap a card to read the full message again",
+    upright: "Upright", reversed: "Reversed",
+    positions: ["Situation", "Guidance", "Outcome"],
+    steps: ["First Card", "Second Card", "Third Card"],
+    setLang: "Language", setDeck: "Choose a Deck",
+    deckNames: ["Antique", "Night", "Dawn"],
+    noteDeck: "Changing decks begins a new reading.",
+    setRev: "Use Reversed Cards",
+    noteRev: "When turned off, all cards appear upright. Changes apply to the next reading.",
+    setSpeed: "Spread Speed",
+    speeds: ["Slow", "Normal", "Fast"],
+  },
+};
+const STEP_EN = ["First Card", "Second Card", "Third Card"];
+
+/* ── 설정 ── */
+const DEFAULTS = { deck: "v3", reversed: true, speed: "normal", lang: null };
+const SPEEDS = { slow: 42, normal: 26, fast: 13 };
+let cfg = { ...DEFAULTS };
+try {
+  const saved = JSON.parse(localStorage.getItem("cozyTarotCfg"));
+  if (saved) cfg = { ...DEFAULTS, ...saved };
+  if (cfg.schema !== 2) { if (cfg.deck === "v1") cfg.deck = "v3"; cfg.schema = 2; }
+} catch (e) {}
+function saveCfg() { localStorage.setItem("cozyTarotCfg", JSON.stringify(cfg)); }
+
+function effLang() {
+  if (cfg.lang) return cfg.lang;
+  return (navigator.language || "").toLowerCase().startsWith("ko") ? "ko" : "en";
+}
+const T = () => I18N[effLang()];
+
+const $ = id => document.getElementById(id);
+const stage = $("stage"), guide = $("guide");
+const chosenRow = $("chosenRow"), beginBtn = $("beginReading");
+const focusSec = $("focus"), summarySec = $("summary");
+
+let deckOrder = [];
+let revMap = [];
+let els = [];
+let phase = "stack";
+let picked = [];
+let cur = 0;
+
+const imgSrc = i => `assets/${cfg.deck}/major_${String(TAROT_CARDS[i].id).padStart(2,"0")}.webp`;
+const backSrc = () => `assets/${cfg.deck}/back.webp`;
+
+function shuffle(a) {
+  a = [...a];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* ── 언어 적용 ── */
+function applyLang() {
+  const L = effLang(), t = T();
+  document.documentElement.lang = L;
+  document.title = t.docTitle;
+  document.body.classList.toggle("lang-en", L === "en");
+  $("appTitle").textContent = t.title;
+  $("labelLang").textContent = t.setLang;
+  $("labelDeck").textContent = t.setDeck;
+  $("deckName1").textContent = t.deckNames[0];
+  $("deckName2").textContent = t.deckNames[1];
+  $("deckName3").textContent = t.deckNames[2];
+  $("noteDeck").textContent = t.noteDeck;
+  $("labelRev").textContent = t.setRev;
+  $("noteRev").textContent = t.noteRev;
+  $("labelSpeed").textContent = t.setSpeed;
+  document.querySelectorAll("#speedSeg button").forEach((b, i) => b.textContent = t.speeds[i]);
+  $("beginReading").textContent = t.begin;
+  $("again").textContent = t.again;
+  $("sumHint").textContent = t.sumHint;
+  document.querySelectorAll("#langSeg button").forEach(b => b.classList.toggle("sel", b.dataset.v === L));
+
+  // 진행 중인 화면의 동적 텍스트 갱신
+  if (phase === "stack") guide.textContent = t.guideStack;
+  else if (phase === "fan" || phase === "pick") guide.textContent = t.guidePick;
+  else if (phase === "chosen") {
+    guide.textContent = t.guideChosen;
+    [...chosenRow.querySelectorAll(".pos-kr")].forEach((el, s) => el.textContent = t.positions[s]);
+  }
+  else if (phase === "focus") { guide.textContent = ""; showFocus(cur, true); }
+  else if (phase === "summary") { guide.textContent = t.guideSummary; renderSummaryGrid(); }
+}
+
+/* ── 1. 스택 ── */
+function buildStack() {
+  stage.classList.remove("hidden");
+  stage.style.opacity = "";
+  chosenRow.classList.remove("on");
+  chosenRow.innerHTML = "";
+  beginBtn.classList.remove("on");
+  focusSec.classList.remove("on");
+  summarySec.classList.remove("on");
+
+  stage.innerHTML = "";
+  els = [];
+  picked = [];
+  cur = 0;
+  phase = "stack";
+
+  deckOrder = shuffle(TAROT_CARDS.map((_, i) => i));
+  revMap = deckOrder.map(() => cfg.reversed && Math.random() < 0.5);
+
+  deckOrder.forEach((ci, i) => {
+    const el = document.createElement("div");
+    el.className = "card";
+    el.dataset.i = i;
+    const jx = (Math.random() - 0.5) * 6;
+    const jr = (Math.random() - 0.5) * 5;
+    el.style.transform = `translate(${jx}px, ${-i * 0.6}px) rotate(${jr}deg)`;
+    el.style.zIndex = i;
+    el.innerHTML = `<div class="face"><img src="${backSrc()}" alt="" draggable="false"></div>`;
+    el.addEventListener("click", onCardClick);
+    stage.appendChild(el);
+    els.push(el);
+  });
+  guide.textContent = T().guideStack;
+}
+
+/* ── 2. 펼침 ── */
+function fanOut() {
+  phase = "fan";
+  const n = els.length;
+  const spread = 116;
+  const start = -spread / 2;
+  const gap = SPEEDS[cfg.speed];
+  els.forEach((el, i) => {
+    const ang = start + (spread / (n - 1)) * i;
+    setTimeout(() => { el.style.transform = `rotate(${ang}deg)`; }, 90 + i * gap);
+  });
+  setTimeout(() => {
+    guide.textContent = T().guidePick;
+    phase = "pick";
+  }, 90 + n * gap + 500);
+}
+
+/* ── 3. 선택 ── */
+function onCardClick(e) {
+  const el = e.currentTarget;
+  if (phase === "stack") { fanOut(); return; }
+  if (phase !== "pick" || el.classList.contains("picked")) return;
+
+  el.classList.add("picked");
+  const m = el.style.transform.match(/rotate\(([-\d.]+)deg\)/);
+  const ang = m ? parseFloat(m[1]) : 0;
+  el.style.transform = `rotate(${ang}deg) translateY(-26px)`;
+
+  picked.push(parseInt(el.dataset.i));
+  guide.textContent = T().guideRemain[picked.length - 1] ?? "";
+
+  if (picked.length === 3) {
+    phase = "chosen";
+    setTimeout(showChosen, 650);
+  }
+}
+
+/* ── 4. 뽑힌 3장 대기 ── */
+function showChosen() {
+  els.forEach(el => {
+    if (!el.classList.contains("picked")) el.classList.add("dimmed");
+    el.classList.add("locked");
+  });
+  guide.textContent = T().guideChosen;
+
+  setTimeout(() => {
+    stage.style.transition = "opacity 0.8s ease";
+    stage.style.opacity = "0";
+    setTimeout(() => {
+      stage.classList.add("hidden");
+      chosenRow.innerHTML = picked.map((p, s) => `
+        <div class="chosen">
+          <div class="pos-kr">${T().positions[s]}</div>
+          <div class="mini"><img src="${backSrc()}" alt="" draggable="false"></div>
+        </div>`).join("");
+      chosenRow.classList.add("on");
+      [...chosenRow.children].forEach((c, s) => setTimeout(() => c.classList.add("in"), 120 + s * 220));
+      setTimeout(() => {
+        beginBtn.textContent = T().begin;
+        beginBtn.classList.add("on");
+      }, 120 + 3 * 220 + 300);
+    }, 850);
+  }, 700);
+}
+
+/* ── 5. 집중 리딩 ── */
+beginBtn.addEventListener("click", () => {
+  chosenRow.classList.remove("on");
+  beginBtn.classList.remove("on");
+  guide.textContent = "";
+  focusSec.classList.add("on");
+  phase = "focus";
+  cur = 0;
+  showFocus(0);
+});
+
+function showFocus(s, keepFlip) {
+  const t = T();
+  const ci = deckOrder[picked[s]];
+  const c = TAROT_CARDS[ci];
+  const pack = c.i18n[effLang()];
+  const rev = revMap[picked[s]];
+
+  $("focusStep").textContent = STEP_EN[s];
+  $("focusPos").textContent = effLang() === "ko" ? `${t.steps[s]} · ${t.positions[s]}` : t.positions[s];
+  $("focusBack").src = backSrc();
+  const front = $("focusFront");
+  front.src = imgSrc(ci);
+  front.className = rev ? "rev" : "";
+
+  const flip = $("focusFlip");
+  const text = $("focusText");
+  if (!keepFlip) { flip.classList.remove("open"); text.classList.remove("in"); }
+
+  const kw   = rev ? pack.reversedKeyword : pack.keyword;
+  const decl = rev ? pack.reversedDeclaration : pack.declaration;
+  const body = rev ? pack.reversedReading : pack.reading;
+  text.innerHTML = `
+    <div class="f-name-en">${c.nameEn}</div>
+    ${pack.name !== c.nameEn ? `<div class="f-name-kr">${pack.name}</div>` : ""}
+    <span class="badge ${rev ? "rev" : "up"}">${rev ? t.reversed : t.upright}</span>
+    <div class="f-keyword">${kw}</div>
+    <div class="f-decl">${decl}</div>
+    <div class="f-reading">${body.split(/\n\n+/).map(p => `<p>${p}</p>`).join("")}</div>`;
+
+  [...$("dots").children].forEach((d, i) => d.classList.toggle("cur", i === s));
+  $("nextCard").textContent = s < 2 ? t.next : t.toSummary;
+
+  if (!keepFlip) {
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        flip.classList.add("open");
+        text.classList.add("in");
+      }, 350);
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+}
+
+$("nextCard").addEventListener("click", () => {
+  if (cur < 2) { cur++; showFocus(cur); }
+  else showSummary();
+});
+
+/* ── 6. 요약 ── */
+function renderSummaryGrid() {
+  const t = T();
+  const grid = $("sumGrid");
+  grid.innerHTML = picked.map((p, s) => {
+    const ci = deckOrder[p];
+    const c = TAROT_CARDS[ci];
+    const pack = c.i18n[effLang()];
+    const rev = revMap[p];
+    return `
+      <div class="sum-card in" data-s="${s}">
+        <div class="pos-kr">${t.positions[s]}</div>
+        <div class="pic"><img src="${imgSrc(ci)}" class="${rev ? "rev" : ""}" alt="${c.nameEn}" draggable="false"></div>
+        <div class="s-name-en">${c.nameEn}</div>
+        ${pack.name !== c.nameEn ? `<div class="s-name-kr">${pack.name}</div>` : ""}
+        <span class="badge ${rev ? "rev" : "up"}">${rev ? t.reversed : t.upright}</span>
+        <div class="s-keyword">${rev ? pack.reversedKeyword : pack.keyword}</div>
+        <div class="s-decl">${rev ? pack.reversedDeclaration : pack.declaration}</div>
+      </div>`;
+  }).join("");
+  [...grid.children].forEach(el => {
+    el.addEventListener("click", () => openModal(parseInt(el.dataset.s)));
+  });
+}
+
+function showSummary() {
+  focusSec.classList.remove("on");
+  phase = "summary";
+  guide.textContent = T().guideSummary;
+  renderSummaryGrid();
+  const grid = $("sumGrid");
+  [...grid.children].forEach((el, s) => {
+    el.classList.remove("in");
+    setTimeout(() => el.classList.add("in"), 100 + s * 200);
+  });
+  summarySec.classList.add("on");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* ── 전문 모달 ── */
+function openModal(s) {
+  const t = T();
+  const ci = deckOrder[picked[s]];
+  const c = TAROT_CARDS[ci];
+  const pack = c.i18n[effLang()];
+  const rev = revMap[picked[s]];
+  const kw   = rev ? pack.reversedKeyword : pack.keyword;
+  const decl = rev ? pack.reversedDeclaration : pack.declaration;
+  const body = rev ? pack.reversedReading : pack.reading;
+  $("modalBody").innerHTML = `
+    <div class="modal-pic"><img src="${imgSrc(ci)}" class="${rev ? "rev" : ""}" alt=""></div>
+    <div class="focus-text in" style="transition:none">
+      <div class="focus-step" style="text-align:inherit;margin-bottom:6px">${t.positions[s]}</div>
+      <div class="f-name-en">${c.nameEn}</div>
+      ${pack.name !== c.nameEn ? `<div class="f-name-kr">${pack.name}</div>` : ""}
+      <span class="badge ${rev ? "rev" : "up"}">${rev ? t.reversed : t.upright}</span>
+      <div class="f-keyword">${kw}</div>
+      <div class="f-decl">${decl}</div>
+      <div class="f-reading">${body.split(/\n\n+/).map(p => `<p>${p}</p>`).join("")}</div>
+    </div>`;
+  $("modal").classList.add("on");
+}
+$("modalClose").addEventListener("click", () => $("modal").classList.remove("on"));
+$("modal").addEventListener("click", e => { if (e.target === $("modal")) $("modal").classList.remove("on"); });
+
+/* ── 다시 뽑기 ── */
+$("again").addEventListener("click", buildStack);
+
+/* ── 설정 UI ── */
+const settings = $("settings"), dim = $("dim");
+$("gear").addEventListener("click", () => { settings.classList.add("open"); dim.classList.add("on"); });
+$("settingsClose").addEventListener("click", closeSettings);
+dim.addEventListener("click", closeSettings);
+function closeSettings() { settings.classList.remove("open"); dim.classList.remove("on"); }
+
+function syncSettingsUI() {
+  document.querySelectorAll(".deck-opt").forEach(b => b.classList.toggle("sel", b.dataset.deck === cfg.deck));
+  $("revToggle").classList.toggle("on", cfg.reversed);
+  document.querySelectorAll("#speedSeg button").forEach(b => b.classList.toggle("sel", b.dataset.v === cfg.speed));
+  document.querySelectorAll("#langSeg button").forEach(b => b.classList.toggle("sel", b.dataset.v === effLang()));
+}
+document.querySelectorAll(".deck-opt").forEach(b => b.addEventListener("click", () => {
+  if (cfg.deck === b.dataset.deck) return;
+  cfg.deck = b.dataset.deck;
+  saveCfg(); syncSettingsUI();
+  buildStack();
+}));
+$("revToggle").addEventListener("click", () => {
+  cfg.reversed = !cfg.reversed;
+  saveCfg(); syncSettingsUI();
+});
+document.querySelectorAll("#speedSeg button").forEach(b => b.addEventListener("click", () => {
+  cfg.speed = b.dataset.v;
+  saveCfg(); syncSettingsUI();
+}));
+document.querySelectorAll("#langSeg button").forEach(b => b.addEventListener("click", () => {
+  if (cfg.lang === b.dataset.v) return;
+  cfg.lang = b.dataset.v;
+  saveCfg(); syncSettingsUI();
+  applyLang();
+}));
+
+/* ── 소스 보기 방어 (완전한 차단은 아님) ── */
+document.addEventListener("contextmenu", e => e.preventDefault());
+document.addEventListener("keydown", e => {
+  const k = (e.key || "").toLowerCase();
+  if (e.key === "F12" ||
+      ((e.ctrlKey || e.metaKey) && !e.shiftKey && (k === "u" || k === "s")) ||
+      ((e.ctrlKey || e.metaKey) && e.shiftKey && (k === "i" || k === "j" || k === "c"))) {
+    e.preventDefault();
+  }
+});
+
+applyLang();
+syncSettingsUI();
+buildStack();
+</script>
+</body>
+</html>
