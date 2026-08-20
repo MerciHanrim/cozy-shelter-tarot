@@ -18,9 +18,9 @@
 
 메이저 아르카나 22장 × 3가지 테마
 
-- **고서 (Antique)** — `assets/v1`
-- **밤 (Night)** — `assets/v2`
-- **새벽 (Dawn)** — `assets/v3`
+- **고서 (Antique)** — 수묵풍 — `assets/v1`
+- **밤 (Night)** — 유화풍 — `assets/v2`
+- **새벽 (Dawn)** — 수채화풍 — `assets/v3`
 
 ## 구조
 
